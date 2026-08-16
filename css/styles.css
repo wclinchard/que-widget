@@ -214,6 +214,8 @@ main.is-visible {
   max-height: 0;
   opacity: 0;
   overflow: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   transform: translateY(-4px);
   pointer-events: none;
   transition:
@@ -223,6 +225,10 @@ main.is-visible {
     padding 0.28s ease,
     margin 0.28s ease,
     border-color 0.2s ease;
+}
+
+.help-popover::-webkit-scrollbar {
+  display: none;
 }
 
 .help-popover.is-open {

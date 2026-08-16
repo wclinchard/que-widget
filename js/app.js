@@ -541,6 +541,16 @@ copyBtn.addEventListener("click", copyOffer);
 helpBtn.addEventListener("click", toggleHelp);
 revealBtn.addEventListener("click", handleRevealClick);
 
+document.addEventListener("keydown", event => {
+  if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+
+  if (event.key === "ArrowRight") {
+    nextOffer();
+  } else if (event.key === "ArrowLeft") {
+    goBack();
+  }
+});
+
 learnMoreEl.addEventListener("click", () => {
   const offer = categoryOffers[current];
   if (!offer) return;

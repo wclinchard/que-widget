@@ -501,6 +501,9 @@ button.reveal.is-revealed:focus-visible {
   position: absolute;
   bottom: 12px;
   left: 16px;
+  display: flex;
+  align-items: center;
+  height: 22px;
   margin: 0;
   font-size: 11px;
   font-weight: 400;

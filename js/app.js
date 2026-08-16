@@ -644,11 +644,28 @@ function reserveOfferHeight() {
   render(current);
 }
 
+function saveHelpOpenState(isOpen) {
+  try {
+    localStorage.setItem(HELP_OPEN_STORAGE_KEY, isOpen ? "1" : "0");
+  } catch (err) {
+    // localStorage unavailable (e.g. private browsing) — nothing to do
+  }
+}
+
+function loadHelpOpenState() {
+  try {
+    return localStorage.getItem(HELP_OPEN_STORAGE_KEY) === "1";
+  } catch (err) {
+    return false;
+  }
+}
+
 function openHelp() {
   helpPopoverEl.classList.add("is-open");
   helpPopoverEl.setAttribute("aria-hidden", "false");
   helpBtn.classList.add("is-active");
   helpBtn.setAttribute("aria-expanded", "true");
+  saveHelpOpenState(true);
 }
 
 function closeHelp() {
@@ -656,6 +673,7 @@ function closeHelp() {
   helpPopoverEl.setAttribute("aria-hidden", "true");
   helpBtn.classList.remove("is-active");
   helpBtn.setAttribute("aria-expanded", "false");
+  saveHelpOpenState(false);
 }
 
 function toggleHelp() {
@@ -710,6 +728,12 @@ reserveOfferHeight();
 updateBackButton();
 saveShuffleState();
 updateUrlHash(categoryOffers[current]);
+
+// Restored before the reveal below, so the panel is already in its right
+// state by the time the widget fades in — no separate pop-open animation.
+if (loadHelpOpenState()) {
+  openHelp();
+}
 
 window.addEventListener("pageshow", updateBackButton);
 

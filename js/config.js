@@ -9,6 +9,7 @@ const EXPLORE_COOLDOWN_MS = 10000;       // min time between exploration-count i
 const RESIZE_RECALC_DEBOUNCE_MS = 150;   // wait after the window stops resizing before re-measuring card height
 
 const SHUFFLE_STORAGE_KEY = "que-widget:shuffle";                  // localStorage key for the saved shuffle position
+const HELP_OPEN_STORAGE_KEY = "que-widget:help-open";               // localStorage key for whether the ? panel was left open
 const EXPLORE_STORAGE_KEY = "que-widget:explored";                 // localStorage key for saved exploration counts
 const EXPLORE_COOLDOWN_STORAGE_KEY = "que-widget:explore-cooldown"; // localStorage key for per-offer cooldown timestamps
 const EXPLORE_SEEN_STORAGE_KEY = "que-widget:explore-seen";        // localStorage key for offers this browser already registered

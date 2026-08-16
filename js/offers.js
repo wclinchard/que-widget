@@ -16,7 +16,11 @@
 //   category: "...",   // must match the surrounding category key
 //   getting: [...],
 //   costs: [...],
-//   link: "..."
+//   link: "...",
+//   explored: 0         // placeholder exploration count, shown as "N have explored"
+//                        // and incremented locally on "Learn more" clicks.
+//                        // Swap this for a real shared count later (e.g. fetched
+//                        // from an API) without changing how it's displayed.
 // }
 
 const OFFERS = {
@@ -38,7 +42,8 @@ const OFFERS = {
         "Plus — $20/mo",
         "Pro — $200/mo"
       ],
-      link: "https://openai.com/chatgpt/pricing/"
+      link: "https://openai.com/chatgpt/pricing/",
+      explored: 1400
     },
     {
       provider: "Anthropic",
@@ -56,7 +61,8 @@ const OFFERS = {
         "Max — $100/mo (5x) or $200/mo (20x)",
         "Team — from $25/user/mo"
       ],
-      link: "https://claude.com/pricing"
+      link: "https://claude.com/pricing",
+      explored: 2300
     },
     {
       provider: "Google",
@@ -74,7 +80,8 @@ const OFFERS = {
         "Pro — $19.99/mo",
         "Ultra — $99.99/mo (5x) or $199.99/mo (20x)"
       ],
-      link: "https://gemini.google/subscriptions/"
+      link: "https://gemini.google/subscriptions/",
+      explored: 980
     },
     {
       provider: "Perplexity",
@@ -91,7 +98,8 @@ const OFFERS = {
         "Pro — $20/mo",
         "Max — $200/mo"
       ],
-      link: "https://www.perplexity.ai/pro"
+      link: "https://www.perplexity.ai/pro",
+      explored: 640
     },
     {
       provider: "xAI",
@@ -109,7 +117,8 @@ const OFFERS = {
         "Premium — $30/mo",
         "Heavy — $300/mo"
       ],
-      link: "https://x.ai/grok"
+      link: "https://x.ai/grok",
+      explored: 1150
     },
     {
       provider: "Cursor",
@@ -127,7 +136,8 @@ const OFFERS = {
         "Pro+ — $60/mo",
         "Ultra — $200/mo"
       ],
-      link: "https://cursor.com/pricing"
+      link: "https://cursor.com/pricing",
+      explored: 3100
     }
   ],
 

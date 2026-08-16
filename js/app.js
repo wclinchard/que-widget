@@ -2,9 +2,97 @@ const availableCategories = Object.keys(OFFERS).filter(
   key => OFFERS[key].length > 0
 );
 
-let activeCategory = DEFAULT_CATEGORY;
-let categoryOffers = OFFERS[activeCategory] || [];
-let current = Math.floor(Math.random() * categoryOffers.length);
+// Shuffle-bag randomization: shuffleOrder holds a random permutation of
+// offer indices for the active category, and shufflePos points at the one
+// currently shown. Every offer in the bag is shown exactly once before any
+// repeats — when the bag runs out, it's reshuffled into a new cycle.
+let shuffleOrder = [];
+let shufflePos = 0;
+
+function shuffledIndices(length) {
+  const order = Array.from({ length }, (_, i) => i);
+
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+
+  return order;
+}
+
+function startBag(offers) {
+  shuffleOrder = shuffledIndices(offers.length);
+  shufflePos = 0;
+  return shuffleOrder[0];
+}
+
+function advanceBag() {
+  shufflePos++;
+
+  if (shufflePos >= shuffleOrder.length) {
+    const lastIndex = shuffleOrder[shuffleOrder.length - 1];
+    shuffleOrder = shuffledIndices(categoryOffers.length);
+
+    if (shuffleOrder.length > 1 && shuffleOrder[0] === lastIndex) {
+      [shuffleOrder[0], shuffleOrder[1]] = [shuffleOrder[1], shuffleOrder[0]];
+    }
+
+    shufflePos = 0;
+  }
+
+  return shuffleOrder[shufflePos];
+}
+
+function saveShuffleState() {
+  try {
+    localStorage.setItem(
+      SHUFFLE_STORAGE_KEY,
+      JSON.stringify({ category: activeCategory, order: shuffleOrder, pos: shufflePos })
+    );
+  } catch (err) {
+    // localStorage unavailable (e.g. private browsing) — nothing to do
+  }
+}
+
+function loadShuffleState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SHUFFLE_STORAGE_KEY));
+
+    if (
+      !saved ||
+      !OFFERS[saved.category] ||
+      !Array.isArray(saved.order) ||
+      saved.order.length !== OFFERS[saved.category].length ||
+      saved.pos < 0 ||
+      saved.pos >= saved.order.length
+    ) {
+      return null;
+    }
+
+    return saved;
+  } catch (err) {
+    return null;
+  }
+}
+
+const savedShuffle = loadShuffleState();
+
+let activeCategory;
+let categoryOffers;
+let current;
+
+if (savedShuffle) {
+  activeCategory = savedShuffle.category;
+  categoryOffers = OFFERS[activeCategory];
+  shuffleOrder = savedShuffle.order;
+  shufflePos = savedShuffle.pos;
+  current = shuffleOrder[shufflePos];
+} else {
+  activeCategory = DEFAULT_CATEGORY;
+  categoryOffers = OFFERS[activeCategory] || [];
+  current = startBag(categoryOffers);
+}
+
 let history = [];
 let animating = false;
 let copyResetTimer = null;
@@ -24,6 +112,7 @@ const helpBtn = document.getElementById("helpBtn");
 const helpPopoverEl = document.getElementById("helpPopover");
 const revealBtn = document.getElementById("revealBrand");
 const revealIconMarkup = revealBtn.innerHTML;
+const exploreCountEl = document.getElementById("exploreCount");
 
 function formatCategoryLabel(key) {
   return key
@@ -76,6 +165,15 @@ function handleRevealClick() {
   }
 }
 
+function snapshotState() {
+  return {
+    category: activeCategory,
+    index: current,
+    order: shuffleOrder.slice(),
+    pos: shufflePos
+  };
+}
+
 function applyState(category, index) {
   const categoryChanged = category !== activeCategory;
 
@@ -91,6 +189,8 @@ function applyState(category, index) {
   } else {
     render(current);
   }
+
+  saveShuffleState();
 }
 
 function transition(work) {
@@ -123,8 +223,8 @@ function switchCategory(key) {
   }
 
   transition(() => {
-    history.push({ category: activeCategory, index: current });
-    applyState(key, Math.floor(Math.random() * OFFERS[key].length));
+    history.push(snapshotState());
+    applyState(key, startBag(OFFERS[key]));
   });
 }
 
@@ -133,8 +233,24 @@ function goBack() {
 
   transition(() => {
     const target = history.pop();
+    shuffleOrder = target.order;
+    shufflePos = target.pos;
     applyState(target.category, target.index);
   });
+}
+
+// Local, in-memory exploration count. Swap these two functions for calls to
+// a real API later — nothing else in the app needs to change.
+function getExploreCount(offer) {
+  return offer.explored;
+}
+
+function incrementExploreCount(offer) {
+  offer.explored += 1;
+}
+
+function updateExploreCount(offer) {
+  exploreCountEl.textContent = `${getExploreCount(offer).toLocaleString()} have explored`;
 }
 
 function render(index) {
@@ -149,21 +265,15 @@ function render(index) {
     .join("");
 
   learnMoreEl.href = offer.link;
+  updateExploreCount(offer);
 }
 
 function nextOffer() {
   if (categoryOffers.length <= 1 || animating) return;
 
   transition(() => {
-    history.push({ category: activeCategory, index: current });
-
-    let next;
-
-    do {
-      next = Math.floor(Math.random() * categoryOffers.length);
-    } while (next === current);
-
-    applyState(activeCategory, next);
+    history.push(snapshotState());
+    applyState(activeCategory, advanceBag());
   });
 }
 
@@ -257,6 +367,13 @@ copyBtn.addEventListener("click", copyOffer);
 helpBtn.addEventListener("click", toggleHelp);
 revealBtn.addEventListener("click", handleRevealClick);
 
+learnMoreEl.addEventListener("click", () => {
+  const offer = categoryOffers[current];
+  if (!offer) return;
+  incrementExploreCount(offer);
+  updateExploreCount(offer);
+});
+
 document.addEventListener("click", event => {
   if (!helpPopoverEl.classList.contains("is-open")) return;
   if (event.target === helpBtn || helpPopoverEl.contains(event.target)) {
@@ -275,6 +392,7 @@ renderCategoryFilter();
 render(current);
 reserveOfferHeight();
 updateBackButton();
+saveShuffleState();
 
 window.addEventListener("pageshow", updateBackButton);
 

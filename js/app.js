@@ -225,10 +225,19 @@ function loadShuffleState() {
       !saved ||
       !OFFERS[saved.category] ||
       !Array.isArray(saved.order) ||
-      saved.order.length !== OFFERS[saved.category].length ||
-      saved.pos < 0 ||
-      saved.pos >= saved.order.length
+      saved.order.length !== OFFERS[saved.category].length
     ) {
+      return null;
+    }
+
+    // An empty category has no valid index into an empty order — pos must
+    // be exactly 0 (meaning "no offer"), not caught by the pos < length
+    // check below since 0 >= 0 would otherwise wrongly reject it.
+    if (saved.order.length === 0) {
+      return saved.pos === 0 ? saved : null;
+    }
+
+    if (saved.pos < 0 || saved.pos >= saved.order.length) {
       return null;
     }
 

@@ -79,6 +79,15 @@ main.is-visible {
   padding: 26px 24px 38px;
 }
 
+.empty-state {
+  margin: 0;
+  padding: 34px 8px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
 .card-actions {
   position: absolute;
   top: 14px;
@@ -86,6 +95,13 @@ main.is-visible {
   display: flex;
   align-items: center;
   gap: 14px;
+}
+
+/* `display: flex` above has the same specificity as the browser's default
+   [hidden] { display: none } rule, and wins on cascade order alone — so
+   the hidden attribute would otherwise silently do nothing here. */
+.card-actions[hidden] {
+  display: none;
 }
 
 .copy-btn {
@@ -266,7 +282,11 @@ main.is-visible {
 
 .category-filter {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   gap: 6px 8px;
   margin: 0 0 24px;
   padding: 10px 12px;
@@ -274,6 +294,19 @@ main.is-visible {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 14px;
+}
+
+.category-filter::-webkit-scrollbar {
+  display: none;
+}
+
+.category-filter li {
+  flex-shrink: 0;
+}
+
+.category-divider {
+  position: relative;
+  top: 1px;
 }
 
 .category-btn {
@@ -431,6 +464,11 @@ li {
   gap: 20px;
 }
 
+/* Same [hidden]-vs-display:flex specificity tie as .card-actions/button.reveal. */
+.row[hidden] {
+  display: none;
+}
+
 .row-actions {
   display: flex;
   align-items: center;
@@ -528,6 +566,11 @@ button.reveal {
   transition:
     opacity 0.15s ease,
     color 0.15s ease;
+}
+
+/* Same [hidden]-vs-display:flex specificity tie as .card-actions above. */
+button.reveal[hidden] {
+  display: none;
 }
 
 button.reveal svg {

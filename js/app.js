@@ -1,10 +1,10 @@
-// Shuffled once per page load, then left alone — the category nav order
-// only changes on a fresh load, never when switching categories or
-// clicking Next. Unrelated to offer randomization (see shuffleInPlace's
-// other use below, for the offer shuffle-bag).
-const availableCategories = shuffleInPlace(
-  Object.keys(OFFERS).filter(key => OFFERS[key].length > 0)
-);
+// Every category shows in the nav, even ones with no offers yet — render()
+// shows an empty-state message for those instead of an offer card. Shuffled
+// once per page load, then left alone — the category nav order only
+// changes on a fresh load, never when switching categories or clicking
+// Next. Unrelated to offer randomization (see shuffleInPlace's other use
+// below, for the offer shuffle-bag).
+const availableCategories = shuffleInPlace(Object.keys(OFFERS));
 
 // Exploration counts persist locally by "category:provider" key, so a
 // refresh doesn't lose increments made this session. Offers without a
@@ -277,6 +277,12 @@ let revealTimer = null;
 
 const mainEl = document.querySelector("main");
 const categoryFilterEl = document.getElementById("categoryFilter");
+const cardActionsEl = document.getElementById("cardActions");
+const emptyStateEl = document.getElementById("emptyState");
+const gettingSectionEl = document.getElementById("gettingSection");
+const costsSectionEl = document.getElementById("costsSection");
+const ruleEl = document.getElementById("rule");
+const rowEl = document.getElementById("row");
 const gettingEl = document.getElementById("getting");
 const costsEl = document.getElementById("costs");
 const gettingFadeEl = gettingEl.nextElementSibling;
@@ -307,13 +313,27 @@ function formatCategoryLabel(key) {
     .join(" ");
 }
 
+function categoryPillHtml(key, active) {
+  const activeClass = active ? " is-active" : "";
+  return `<li><button type="button" class="category-btn${activeClass}" data-category="${key}">${formatCategoryLabel(key)}</button></li>`;
+}
+
+// The active category always pins to the far left, split from the rest by
+// a divider — everything after it keeps its shuffled order from
+// availableCategories, it's just filtered down to "not the active one".
 function renderCategoryFilter() {
-  categoryFilterEl.innerHTML = availableCategories
-    .map(key => {
-      const active = key === activeCategory ? " is-active" : "";
-      return `<li><button type="button" class="category-btn${active}" data-category="${key}">${formatCategoryLabel(key)}</button></li>`;
-    })
-    .join("");
+  const rest = availableCategories.filter(key => key !== activeCategory);
+
+  categoryFilterEl.innerHTML =
+    categoryPillHtml(activeCategory, true) +
+    `<li class="category-divider header-divider" aria-hidden="true">|</li>` +
+    rest.map(key => categoryPillHtml(key, false)).join("");
+
+  // The active pill is always freshly pinned at the far left — make sure
+  // it's actually in view instead of leaving the row scrolled wherever it
+  // happened to be (e.g. after picking a pill that was scrolled off to
+  // the right).
+  categoryFilterEl.scrollTo({ left: 0, behavior: "smooth" });
 }
 
 function updateBackButton() {
@@ -397,14 +417,7 @@ function transition(work) {
 }
 
 function switchCategory(key) {
-  if (
-    key === activeCategory ||
-    animating ||
-    !OFFERS[key] ||
-    OFFERS[key].length === 0
-  ) {
-    return;
-  }
+  if (key === activeCategory || animating || !OFFERS[key]) return;
 
   transition(() => {
     history.push(snapshotState());
@@ -460,6 +473,28 @@ function updateScrollHint(listEl, fadeEl, arrowEl) {
 
 function render(index) {
   const offer = categoryOffers[index];
+
+  if (!offer) {
+    emptyStateEl.hidden = false;
+    cardActionsEl.hidden = true;
+    gettingSectionEl.hidden = true;
+    costsSectionEl.hidden = true;
+    revealBtn.hidden = true;
+    ruleEl.hidden = true;
+    rowEl.hidden = true; // hides Learn more, Back, and Next together
+    exploreCountEl.textContent = "";
+    gettingEl.innerHTML = "";
+    costsEl.innerHTML = "";
+    return;
+  }
+
+  emptyStateEl.hidden = true;
+  cardActionsEl.hidden = false;
+  gettingSectionEl.hidden = false;
+  costsSectionEl.hidden = false;
+  revealBtn.hidden = false;
+  ruleEl.hidden = false;
+  rowEl.hidden = false;
 
   gettingEl.innerHTML = offer.getting
     .map(item => `<li>${item}</li>`)
@@ -574,6 +609,11 @@ function median(numbers) {
 function reserveOfferHeight() {
   gettingEl.style.height = "";
   costsEl.style.height = "";
+
+  if (categoryOffers.length === 0) {
+    render(current); // shows the empty-state message — nothing to measure
+    return;
+  }
 
   const gettingHeights = [];
   const costsHeights = [];

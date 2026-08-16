@@ -220,7 +220,7 @@
   <ul id="categoryFilter" class="category-filter"></ul>
 
   <div id="offerBody" class="offer-body">
-    <div class="card-actions">
+    <div id="cardActions" class="card-actions">
       <button
         id="shareOffer"
         class="copy-btn"
@@ -240,7 +240,11 @@
       </button>
     </div>
 
-    <section>
+    <p id="emptyState" class="empty-state" hidden>
+      No offers here yet — check back soon.
+    </p>
+
+    <section id="gettingSection">
       <p class="label getting-label">
         WHAT YOU'RE GETTING
         <span id="gettingScrollHint" class="scroll-arrow" aria-hidden="true">
@@ -255,7 +259,7 @@
       </div>
     </section>
 
-    <section>
+    <section id="costsSection">
       <p class="label costs-label">
         WHAT IT COSTS
         <span id="costsScrollHint" class="scroll-arrow" aria-hidden="true">
@@ -285,9 +289,9 @@
     <p id="exploreCount" class="explore-count"></p>
   </div>
 
-  <hr class="rule">
+  <hr id="rule" class="rule">
 
-  <div class="row">
+  <div id="row" class="row">
     <a
       id="learnMore"
       class="link"

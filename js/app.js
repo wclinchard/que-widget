@@ -38,14 +38,17 @@ function findOfferByHash() {
 }
 
 function updateUrlHash(offer) {
-  if (!offer) return;
+  // No offer (e.g. an empty category) → fall back to no hash at all,
+  // rather than silently leaving whatever offer's link was there before.
+  // The address bar should never claim to point at an offer that isn't
+  // actually on screen.
+  const hash = offer ? "#" + encodeURIComponent(offerKey(offer)) : "";
 
-  const hash = "#" + encodeURIComponent(offerKey(offer));
   if (location.hash !== hash) {
     // window.history, not the bare `history` identifier — this file also
     // declares a top-level `history` (the back-navigation stack) that
     // shadows the global window.history for the rest of this script.
-    window.history.replaceState(null, "", hash);
+    window.history.replaceState(null, "", location.pathname + location.search + hash);
   }
 }
 

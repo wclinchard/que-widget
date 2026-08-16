@@ -1,11 +1,70 @@
 # QUE
 
-A tiny static widget that shows one offer at a time, grouped by category,
-with the brand hidden until you choose to reveal it. Offers are shown via a
-shuffle-bag: every offer in a category is shown once before any repeat, then
-the bag reshuffles for a new cycle.
+QUE is a tiny static widget for browsing offers — subscriptions, tools,
+services — one at a time, without a ranked list or a wall of competing
+logos. The problem it's solving: brand recognition changes how people read
+the same offer. A familiar logo can make an offer feel safer, an unfamiliar
+one can make it feel riskier, regardless of what's actually in the offer.
+QUE shows you "what you're getting" and "what it costs" first, and lets you
+reveal the brand — deliberately, in two clicks — once you've actually read
+it. It doesn't rank, recommend, or take payment for placement; offers within
+a category are shown in a random, non-repeating order (see "How it works"
+below).
 
-No build step, no framework, no dependencies. Just HTML, CSS, and vanilla JS.
+No build step, no framework, no dependencies. Just HTML, CSS, and vanilla JS
+— open `index.html` and it runs.
+
+## What's in the box
+
+- **One offer at a time**, chosen from a shuffle-bag per category (every
+  offer shown once before any repeat, then reshuffled — see below).
+- **Category filter** — pills above the offer card, generated automatically
+  from `offers.js`; their on-screen order is shuffled once per page load.
+- **Hidden-brand reveal** — a small eye icon on the card; first click asks
+  "Reveal?", second click confirms and shows the provider name for a few
+  seconds before it hides itself again.
+- **Next / Back** — click the buttons, or use the ArrowRight / ArrowLeft
+  keys. Back replays your actual browsing history for the session, not just
+  a random previous offer.
+- **Copy** — grabs the current offer's "getting"/"costs" text to the
+  clipboard.
+- **Learn more** — opens the provider's real site in a new tab, and counts
+  once toward that offer's "N have explored" number (see "Local storage").
+- **Suggest an offer** — a link next to the QUE logo to a separate,
+  external submission form (QUE itself has no form or backend).
+- **Transparency panel** — the `?` button opens a full explanation of how
+  QUE works, covers commercial relationships, exploration tracking,
+  accuracy caveats, and corrections.
+- **Scrollable long offers** — if a "getting" or "costs" list runs past a
+  typical length, it scrolls within its own box (with a small arrow hint)
+  instead of stretching the card.
+
+## How it works
+
+**Shuffle-bag randomization.** Within a category, `app.js` shuffles all
+offer indices, then walks through that order one at a time — every offer is
+shown exactly once before any repeat. When the bag runs out it reshuffles
+for a new cycle, swapping the first pick if it would otherwise repeat the
+last offer shown. This is genuinely random order, not a ranking: it doesn't
+reflect quality, popularity, or payment.
+
+**Category order.** The category pills are shuffled once when the page
+loads (same shuffle helper as offers, separate array) and then left alone —
+clicking Next, Back, or switching categories never reshuffles the nav.
+`DEFAULT_CATEGORY` in `offers.js` still decides which category is *active*
+on load, independently of where its pill lands in the shuffled row.
+
+**Exploration tracking.** Each offer has an `explored` count, shown as "N
+have explored". Clicking "Learn more" increments it — but only once ever
+per offer per browser (a permanent local flag), and only after a 10-second
+cooldown as a secondary guard. It's honest, browser-scoped bookkeeping, not
+fraud-proof or unique-visitor verification; see "Local storage" below.
+
+**Card sizing.** The getting/costs lists reserve height based on the
+*typical* (median) offer in the category, not the longest one — so the
+common case stays tight, and a genuinely longer-than-usual offer scrolls
+within its own section (with a fade + arrow hint) instead of forcing dead
+space on every shorter offer.
 
 ## Files
 
@@ -38,7 +97,8 @@ const OFFERS = {
       category: "MUSIC",
       getting: ["...", "..."],
       costs: ["Free", "Premium — $11.99/mo"],
-      link: "https://www.spotify.com/premium/"
+      link: "https://www.spotify.com/premium/",
+      explored: 0
     }
   ],
   // ...
@@ -50,7 +110,8 @@ up automatically. Nothing in `index.html` or `app.js` needs to change.
 
 **...add a new offer to an existing category?**
 Add another object to that category's array in `js/offers.js`, following the
-same shape (`provider`, `category`, `getting`, `costs`, `link`).
+same shape (`provider`, `category`, `getting`, `costs`, `link`, `explored`).
+Always start `explored` at `0` — never a made-up number (see "Local storage").
 
 **...remove a category or offer?**
 Delete the entry from `js/offers.js`. An empty category array (`MUSIC: []`)
@@ -68,6 +129,19 @@ Edit `js/app.js`. Timing values (how long a fade takes, how long "Copied"
 stays on screen, the exploration-count cooldown, `localStorage` key names,
 etc.) live in `js/config.js` — change the number there rather than hunting
 for it in `app.js`.
+
+**...change the keyboard shortcuts?**
+Edit the single `document.addEventListener("keydown", ...)` block near the
+bottom of `js/app.js` — it maps `ArrowRight` to `nextOffer()` and
+`ArrowLeft` to `goBack()`.
+
+**...change where "Suggest an offer" points?**
+Edit `SUGGEST_FORM_URL` in `js/config.js`. QUE doesn't host or process the
+form itself — that link just opens whatever URL is set there, in a new tab.
+
+**...update the `?` transparency panel's text?**
+Edit the `#helpPopover` markup in `index.html` — each topic is its own
+`<section class="help-section">` with a title and a paragraph.
 
 ## Data model
 
@@ -115,6 +189,11 @@ defined in `js/config.js`) so a refresh doesn't reset the experience:
 - **Exploration "seen" flags** — the actual anti-duplicate protection: once
   this browser has registered an exploration for an offer, "Learn more"
   never increments that offer's count again, cooldown or not.
+- **Exploration data version** (`EXPLORE_DATA_VERSION`) — if a future change
+  to `offers.js` makes old saved counts wrong (e.g. correcting a starting
+  number), bump this constant. On mismatch, `app.js` wipes all saved
+  exploration data on that browser's next load instead of carrying stale
+  values forward forever.
 
 All of this is client-side bookkeeping for the MVP — it identifies a
 *browser*, not a person. Clearing storage, using another browser, or
@@ -139,6 +218,6 @@ then visit `http://localhost:8000`.
 
 ## How to deploy it
 
-It's three static files plus data — deploy it anywhere that serves static
-files as-is (GitHub Pages, Netlify, Vercel, S3, etc.). There's nothing to
-build or configure.
+It's five static files, no build or configuration — deploy the whole folder
+anywhere that serves static files as-is (GitHub Pages, Netlify, Vercel, S3,
+etc.).

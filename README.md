@@ -28,6 +28,8 @@ No build step, no framework, no dependencies. Just HTML, CSS, and vanilla JS
   a random previous offer.
 - **Copy** — grabs the current offer's "getting"/"costs" text to the
   clipboard.
+- **Share** — copies a deep link straight to the current offer (see
+  "Deep links" below).
 - **Learn more** — opens the provider's real site in a new tab, and counts
   once toward that offer's "N have explored" number (see "Local storage").
 - **Suggest an offer** — a link next to the QUE logo to a separate,
@@ -65,6 +67,26 @@ fraud-proof or unique-visitor verification; see "Local storage" below.
 common case stays tight, and a genuinely longer-than-usual offer scrolls
 within its own section (with a fade + arrow hint) instead of forcing dead
 space on every shorter offer.
+
+## Deep links
+
+The URL hash is always a link to whatever offer is on screen — it updates
+(via `history.replaceState`, so it never adds browser-history entries or
+interferes with Next/Back) every time the active offer changes, and it's
+checked once on page load:
+
+- **Valid hash** (`#AI%3AOpenAI`, i.e. an encoded `category:provider`) →
+  that exact offer loads, in its category, first.
+- **Missing or invalid hash** → falls back to a resumed session
+  (`localStorage`, see below) or, failing that, a fresh random start.
+
+The hash is just an encoded `offerKey(offer)` (`` `${category}:${provider}` ``,
+the same identity string exploration tracking already keys by — see
+`findOfferByHash`/`updateUrlHash` in `app.js`). Loading a deep link still
+starts a normal shuffle-bag for that category — the linked offer is just
+swapped into the first slot, so `current` and `shufflePos` agree and the
+rest of the cycle is still genuinely random. Clicking **Share** copies this
+same URL to the clipboard, so any offer is directly shareable.
 
 ## Files
 
@@ -138,6 +160,11 @@ bottom of `js/app.js` — it maps `ArrowRight` to `nextOffer()` and
 **...change where "Suggest an offer" points?**
 Edit `SUGGEST_FORM_URL` in `js/config.js`. QUE doesn't host or process the
 form itself — that link just opens whatever URL is set there, in a new tab.
+
+**...change the deep-link/share URL format?**
+Edit `findOfferByHash`, `updateUrlHash`, and `buildShareUrl` in `js/app.js`
+— all three read/write the same encoded `offerKey(offer)` string, so keep
+them in sync if you change the format.
 
 **...update the `?` transparency panel's text?**
 Edit the `#helpPopover` markup in `index.html` — each topic is its own

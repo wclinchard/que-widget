@@ -13,6 +13,46 @@ function offerKey(offer) {
   return `${offer.category}:${offer.provider}`;
 }
 
+// Deep-linking: the URL hash is just an encoded offerKey. Looked up once on
+// load to pick a starting offer; kept in sync (via replaceState, so it
+// never touches the browser's own history) whenever the active offer
+// changes, so the address bar is always a shareable link to what's on
+// screen.
+function findOfferByHash() {
+  const raw = location.hash.slice(1);
+  if (!raw) return null;
+
+  let decoded;
+  try {
+    decoded = decodeURIComponent(raw);
+  } catch (err) {
+    return null;
+  }
+
+  for (const key of Object.keys(OFFERS)) {
+    const index = OFFERS[key].findIndex(offer => offerKey(offer) === decoded);
+    if (index !== -1) return { category: key, index };
+  }
+
+  return null;
+}
+
+function updateUrlHash(offer) {
+  if (!offer) return;
+
+  const hash = "#" + encodeURIComponent(offerKey(offer));
+  if (location.hash !== hash) {
+    // window.history, not the bare `history` identifier — this file also
+    // declares a top-level `history` (the back-navigation stack) that
+    // shadows the global window.history for the rest of this script.
+    window.history.replaceState(null, "", hash);
+  }
+}
+
+function buildShareUrl(offer) {
+  return `${location.origin}${location.pathname}#${encodeURIComponent(offerKey(offer))}`;
+}
+
 // If EXPLORE_DATA_VERSION has been bumped since this browser last saved
 // anything, wipe all saved exploration data (counts, cooldowns, seen-flags)
 // so it starts clean instead of carrying old/incorrect values forward.
@@ -195,13 +235,29 @@ function loadShuffleState() {
   }
 }
 
-const savedShuffle = loadShuffleState();
+const hashMatch = findOfferByHash();
+const savedShuffle = !hashMatch ? loadShuffleState() : null;
 
 let activeCategory;
 let categoryOffers;
 let current;
 
-if (savedShuffle) {
+if (hashMatch) {
+  // A deep link always wins over a resumed session — someone followed a
+  // specific link to see a specific offer. Start a fresh bag for that
+  // category, then swap the linked offer into the first slot so what's on
+  // screen matches shufflePos, and the rest of the cycle is still random.
+  activeCategory = hashMatch.category;
+  categoryOffers = OFFERS[activeCategory];
+  startBag(categoryOffers);
+
+  const posInBag = shuffleOrder.indexOf(hashMatch.index);
+  if (posInBag > 0) {
+    [shuffleOrder[0], shuffleOrder[posInBag]] = [shuffleOrder[posInBag], shuffleOrder[0]];
+  }
+
+  current = shuffleOrder[0];
+} else if (savedShuffle) {
   activeCategory = savedShuffle.category;
   categoryOffers = OFFERS[activeCategory];
   shuffleOrder = savedShuffle.order;
@@ -231,6 +287,7 @@ const learnMoreEl = document.getElementById("learnMore");
 const nextBtn = document.getElementById("nextOffer");
 const backBtn = document.getElementById("backOffer");
 const copyBtn = document.getElementById("copyOffer");
+const shareBtn = document.getElementById("shareOffer");
 const helpBtn = document.getElementById("helpBtn");
 const helpPopoverEl = document.getElementById("helpPopover");
 const revealBtn = document.getElementById("revealBrand");
@@ -315,6 +372,7 @@ function applyState(category, index) {
   }
 
   saveShuffleState();
+  updateUrlHash(categoryOffers[current]);
 }
 
 function transition(work) {
@@ -474,6 +532,25 @@ async function copyOffer() {
   }, COPY_RESET_TIMEOUT_MS);
 }
 
+let shareResetTimer = null;
+
+async function shareOffer() {
+  const offer = categoryOffers[current];
+  if (!offer) return;
+
+  const copied = await copyText(buildShareUrl(offer));
+  if (!copied) return;
+
+  shareBtn.textContent = "Copied";
+  shareBtn.classList.add("is-copied");
+
+  clearTimeout(shareResetTimer);
+  shareResetTimer = setTimeout(() => {
+    shareBtn.textContent = "Share";
+    shareBtn.classList.remove("is-copied");
+  }, COPY_RESET_TIMEOUT_MS);
+}
+
 function median(numbers) {
   const sorted = [...numbers].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
@@ -538,6 +615,7 @@ function toggleHelp() {
 nextBtn.addEventListener("click", nextOffer);
 backBtn.addEventListener("click", goBack);
 copyBtn.addEventListener("click", copyOffer);
+shareBtn.addEventListener("click", shareOffer);
 helpBtn.addEventListener("click", toggleHelp);
 revealBtn.addEventListener("click", handleRevealClick);
 
@@ -577,6 +655,7 @@ render(current);
 reserveOfferHeight();
 updateBackButton();
 saveShuffleState();
+updateUrlHash(categoryOffers[current]);
 
 window.addEventListener("pageshow", updateBackButton);
 

@@ -62,12 +62,25 @@
             Both also work with the ArrowRight / ArrowLeft keys. The small
             eye icon reveals the brand: click once to arm it, click again to
             confirm, and it'll show the name briefly before hiding itself
-            again. "Copy" grabs the offer's details as plain text. "Learn
-            more →" opens the provider's real site. If a list runs longer
-            than usual, it scrolls within its own box — a small arrow next
-            to the section title shows when there's more below. And if you
-            think an offer belongs here, "Suggest an offer →" next to the
-            QUE logo opens a separate submission form.
+            again. "Copy" grabs the offer's details as plain text, and
+            "Share" copies a direct link to the offer you're looking at.
+            "Learn more →" opens the provider's real site. If a list runs
+            longer than usual, it scrolls within its own box — a small
+            arrow next to the section title shows when there's more below.
+            And if you think an offer belongs here, "Suggest an offer →"
+            next to the QUE logo opens a separate submission form.
+          </p>
+        </section>
+
+        <section class="help-section">
+          <p class="help-section-title">Sharing a link</p>
+          <p class="help-text">
+            The address bar always matches whatever offer is on screen, and
+            "Share" copies that same link. Opening a shared link takes you
+            straight to that exact offer instead of a random one. The link
+            only encodes which offer it is (its category and an internal
+            provider label) — nothing about you, and it doesn't create or
+            require any kind of account.
           </p>
         </section>
 
@@ -207,13 +220,23 @@
   <ul id="categoryFilter" class="category-filter"></ul>
 
   <div id="offerBody" class="offer-body">
-    <button
-      id="copyOffer"
-      class="copy-btn"
-      type="button"
-    >
-      Copy
-    </button>
+    <div class="card-actions">
+      <button
+        id="shareOffer"
+        class="copy-btn"
+        type="button"
+      >
+        Share
+      </button>
+
+      <button
+        id="copyOffer"
+        class="copy-btn"
+        type="button"
+      >
+        Copy
+      </button>
+    </div>
 
     <section>
       <p class="label getting-label">

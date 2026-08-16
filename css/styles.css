@@ -344,10 +344,17 @@ li {
 .costs {
   max-height: 260px;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.getting::-webkit-scrollbar,
+.costs::-webkit-scrollbar {
+  display: none;
 }
 
 .getting-wrap {
-  margin-bottom: 34px;
+  margin-bottom: 24px;
 }
 
 .costs-wrap {
@@ -369,7 +376,7 @@ li {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 26px;
+  height: 36px;
   background: linear-gradient(to bottom, transparent, var(--card-bg));
   pointer-events: none;
   opacity: 0;
@@ -383,10 +390,13 @@ li {
 .scroll-fade::after {
   content: "▾";
   position: absolute;
-  right: 1px;
-  bottom: -3px;
-  font-size: 10px;
-  color: var(--muted);
+  left: 50%;
+  bottom: 1px;
+  transform: translateX(-50%);
+  font-size: 20px;
+  line-height: 1;
+  color: var(--fg);
+  opacity: 0.6;
 }
 
 /* Divider */

@@ -463,32 +463,42 @@ async function copyOffer() {
   }, COPY_RESET_TIMEOUT_MS);
 }
 
+function median(numbers) {
+  const sorted = [...numbers].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+}
+
 // Reserves a fixed height for the getting list and the costs list
-// separately (each capped at their own max-height in CSS), based on the
-// tallest offer in the active category. Fixing each section's own height —
-// not just the card's overall height — is what keeps "WHAT IT COSTS"
-// anchored at the same position for every offer: any slack from a shorter
-// offer stays inside that offer's own section instead of collecting at the
-// bottom of the card. Always resets first so it re-measures at the current
-// viewport width — callers never need to remember to reset it themselves.
+// separately, based on the *typical* (median) offer in the active
+// category — not the tallest one. Sizing to the tallest offer guarantees
+// dead space inside every shorter offer's box; sizing to the median keeps
+// the common case tight, and a genuinely longer-than-usual offer just
+// scrolls within its own section (see the scroll-fade hint) instead of
+// forcing slack on everyone else.
+//
+// Fixing each section's own height — not just the card's overall height —
+// is what keeps "WHAT IT COSTS" anchored at the same position for every
+// offer. Always resets first so it re-measures at the current viewport
+// width — callers never need to remember to reset it themselves.
 function reserveOfferHeight() {
   gettingEl.style.height = "";
   costsEl.style.height = "";
 
-  let maxGetting = 0;
-  let maxCosts = 0;
+  const gettingHeights = [];
+  const costsHeights = [];
 
   for (let i = 0; i < categoryOffers.length; i++) {
     render(i);
     // getBoundingClientRect is sub-pixel precise, unlike the rounded
     // scrollHeight — using scrollHeight here let a couple of offers render
     // fractionally taller than the reserved height, resizing the section.
-    maxGetting = Math.max(maxGetting, gettingEl.getBoundingClientRect().height);
-    maxCosts = Math.max(maxCosts, costsEl.getBoundingClientRect().height);
+    gettingHeights.push(gettingEl.getBoundingClientRect().height);
+    costsHeights.push(costsEl.getBoundingClientRect().height);
   }
 
-  gettingEl.style.height = maxGetting + "px";
-  costsEl.style.height = maxCosts + "px";
+  gettingEl.style.height = median(gettingHeights) + "px";
+  costsEl.style.height = median(costsHeights) + "px";
   render(current);
 }
 

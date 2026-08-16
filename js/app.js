@@ -473,7 +473,10 @@ function reserveOfferHeight() {
 
   for (let i = 0; i < categoryOffers.length; i++) {
     render(i);
-    max = Math.max(max, offerBodyEl.scrollHeight);
+    // getBoundingClientRect is sub-pixel precise, unlike the rounded
+    // scrollHeight — using scrollHeight here let a couple of offers render
+    // fractionally taller than the reserved min-height, resizing the card.
+    max = Math.max(max, offerBodyEl.getBoundingClientRect().height);
   }
 
   offerBodyEl.style.minHeight = max + "px";

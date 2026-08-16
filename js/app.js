@@ -215,7 +215,6 @@ let revealTimer = null;
 
 const mainEl = document.querySelector("main");
 const categoryFilterEl = document.getElementById("categoryFilter");
-const offerBodyEl = document.getElementById("offerBody");
 const gettingEl = document.getElementById("getting");
 const costsEl = document.getElementById("costs");
 const gettingFadeEl = gettingEl.nextElementSibling;
@@ -464,24 +463,32 @@ async function copyOffer() {
   }, COPY_RESET_TIMEOUT_MS);
 }
 
-// Reserves enough card height for the tallest offer in the active category
-// so the divider/footer never shifts when switching offers. Always resets
-// first so it re-measures at the current viewport width — callers never
-// need to remember to reset it themselves.
+// Reserves a fixed height for the getting list and the costs list
+// separately (each capped at their own max-height in CSS), based on the
+// tallest offer in the active category. Fixing each section's own height —
+// not just the card's overall height — is what keeps "WHAT IT COSTS"
+// anchored at the same position for every offer: any slack from a shorter
+// offer stays inside that offer's own section instead of collecting at the
+// bottom of the card. Always resets first so it re-measures at the current
+// viewport width — callers never need to remember to reset it themselves.
 function reserveOfferHeight() {
-  offerBodyEl.style.minHeight = "";
+  gettingEl.style.height = "";
+  costsEl.style.height = "";
 
-  let max = 0;
+  let maxGetting = 0;
+  let maxCosts = 0;
 
   for (let i = 0; i < categoryOffers.length; i++) {
     render(i);
     // getBoundingClientRect is sub-pixel precise, unlike the rounded
     // scrollHeight — using scrollHeight here let a couple of offers render
-    // fractionally taller than the reserved min-height, resizing the card.
-    max = Math.max(max, offerBodyEl.getBoundingClientRect().height);
+    // fractionally taller than the reserved height, resizing the section.
+    maxGetting = Math.max(maxGetting, gettingEl.getBoundingClientRect().height);
+    maxCosts = Math.max(maxCosts, costsEl.getBoundingClientRect().height);
   }
 
-  offerBodyEl.style.minHeight = max + "px";
+  gettingEl.style.height = maxGetting + "px";
+  costsEl.style.height = maxCosts + "px";
   render(current);
 }
 

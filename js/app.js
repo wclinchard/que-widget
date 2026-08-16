@@ -1,5 +1,9 @@
-const availableCategories = Object.keys(OFFERS).filter(
-  key => OFFERS[key].length > 0
+// Shuffled once per page load, then left alone — the category nav order
+// only changes on a fresh load, never when switching categories or
+// clicking Next. Unrelated to offer randomization (see shuffleInPlace's
+// other use below, for the offer shuffle-bag).
+const availableCategories = shuffleInPlace(
+  Object.keys(OFFERS).filter(key => OFFERS[key].length > 0)
 );
 
 // Exploration counts persist locally by "category:provider" key, so a
@@ -123,15 +127,17 @@ applyStoredExploreCounts();
 let shuffleOrder = [];
 let shufflePos = 0;
 
-function shuffledIndices(length) {
-  const order = Array.from({ length }, (_, i) => i);
-
-  for (let i = order.length - 1; i > 0; i--) {
+function shuffleInPlace(array) {
+  for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [order[i], order[j]] = [order[j], order[i]];
+    [array[i], array[j]] = [array[j], array[i]];
   }
 
-  return order;
+  return array;
+}
+
+function shuffledIndices(length) {
+  return shuffleInPlace(Array.from({ length }, (_, i) => i));
 }
 
 function startBag(offers) {

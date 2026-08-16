@@ -297,6 +297,8 @@ const suggestLinkEl = document.getElementById("suggestOffer");
 suggestLinkEl.href = SUGGEST_FORM_URL;
 
 function formatCategoryLabel(key) {
+  if (CATEGORY_LABELS[key]) return CATEGORY_LABELS[key];
+
   return key
     .split("_")
     .map(word =>

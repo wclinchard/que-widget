@@ -8,7 +8,26 @@
 //
 // To add a new offer to an existing category, add an object to that
 // category's array. To add a new category, add a new `KEY: [...]` entry —
-// nothing else in this file or index.html needs to change.
+// nothing else in this file or index.html needs to change. If the key
+// itself wouldn't read well as a pill label once auto-formatted (e.g. it
+// needs an "&", mixed case like "FinTech", or a hyphen), add an entry to
+// CATEGORY_LABELS below — otherwise the label is just derived from the key.
+//
+// CATEGORY_LABELS: key -> exact display text for the category pill.
+// Optional — any key without an entry here just gets its label derived
+// from the key (underscores become spaces, each word capitalized).
+const CATEGORY_LABELS = {
+  AI: "AI",
+  DEVELOPER_TOOLS: "Developer Tools",
+  DESIGN_CREATIVE: "Design & Creative",
+  PRODUCTIVITY: "Productivity",
+  MARKETING_SALES: "Marketing & Sales",
+  FINTECH_CRYPTO: "FinTech & Crypto",
+  ECOMMERCE_RETAIL: "E-commerce & Retail",
+  CONSUMER_ENTERTAINMENT: "Consumer & Entertainment",
+  HEALTH_FITNESS: "Health & Fitness",
+  SECURITY_PRIVACY: "Security & Privacy"
+};
 //
 // Offer shape:
 // {
@@ -142,14 +161,15 @@ const OFFERS = {
     }
   ],
 
-  MUSIC: [],
-  SOFTWARE: [],
-  STREAMING: [],
-  CLOUD_STORAGE: [],
-  PRODUCTIVITY: [],
-  DESIGN: [],
   DEVELOPER_TOOLS: [],
-  SERVICES: []
+  DESIGN_CREATIVE: [],
+  PRODUCTIVITY: [],
+  MARKETING_SALES: [],
+  FINTECH_CRYPTO: [],
+  ECOMMERCE_RETAIL: [],
+  CONSUMER_ENTERTAINMENT: [],
+  HEALTH_FITNESS: [],
+  SECURITY_PRIVACY: []
 };
 
 // The category QUE currently shows. Changing this is the only step needed

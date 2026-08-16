@@ -113,10 +113,10 @@ Open `js/offers.js` and add a new key to the `OFFERS` object:
 ```js
 const OFFERS = {
   AI: [ /* ... */ ],
-  MUSIC: [
+  GAMING: [
     {
       provider: "Spotify",
-      category: "MUSIC",
+      category: "GAMING",
       getting: ["...", "..."],
       costs: ["Free", "Premium — $11.99/mo"],
       link: "https://www.spotify.com/premium/",
@@ -128,7 +128,12 @@ const OFFERS = {
 ```
 
 That's it — the category filter, randomization, and rendering all pick this
-up automatically. Nothing in `index.html` or `app.js` needs to change.
+up automatically. Nothing in `index.html` or `app.js` needs to change. If
+the key wouldn't read well once auto-formatted into a pill label (it needs
+an "&", mixed case like "FinTech", or a hyphen), add an entry for it to
+`CATEGORY_LABELS` in the same file — see the current 10 categories there
+for examples. A key with no `CATEGORY_LABELS` entry just gets its label
+derived from the key itself (underscores → spaces, each word capitalized).
 
 **...add a new offer to an existing category?**
 Add another object to that category's array in `js/offers.js`, following the
@@ -136,9 +141,13 @@ same shape (`provider`, `category`, `getting`, `costs`, `link`, `explored`).
 Always start `explored` at `0` — never a made-up number (see "Local storage").
 
 **...remove a category or offer?**
-Delete the entry from `js/offers.js`. An empty category array (`MUSIC: []`)
-is fine — it just won't show up in the category filter until it has at
-least one offer.
+Delete the entry from `js/offers.js` (and its `CATEGORY_LABELS` entry, if it
+has one). An empty category array (e.g. `PRODUCTIVITY: []`) is fine — it
+just won't show up in the category filter until it has at least one offer.
+Currently only `AI` is populated; the other nine (`DEVELOPER_TOOLS`,
+`DESIGN_CREATIVE`, `PRODUCTIVITY`, `MARKETING_SALES`, `FINTECH_CRYPTO`,
+`ECOMMERCE_RETAIL`, `CONSUMER_ENTERTAINMENT`, `HEALTH_FITNESS`,
+`SECURITY_PRIVACY`) are empty placeholders waiting for offers.
 
 **...change the UI (layout, text, structure)?**
 Edit `index.html`. It's the only place markup lives.

@@ -13,7 +13,19 @@
 
   <header>
     <div class="header-row">
-      <p class="brand">QUE</p>
+      <div class="header-left">
+        <p class="brand">QUE</p>
+        <span class="header-divider" aria-hidden="true">|</span>
+        <a
+          id="suggestOffer"
+          class="suggest-link"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Suggest an offer →
+        </a>
+      </div>
 
       <button
         id="helpBtn"
@@ -31,81 +43,140 @@
         <p class="help-title">How QUE works</p>
 
         <section class="help-section">
-          <p class="help-section-title">How it works</p>
+          <p class="help-section-title">What QUE is</p>
           <p class="help-text">
-            QUE shows one offer at a time instead of ranking or comparing brands.
-            Pick a category and QUE displays a single offer drawn from that
-            category's pool.
+            QUE is a simple way to browse offers — subscriptions, tools,
+            services — one at a time, instead of a ranked list or a wall of
+            logos competing for attention. The goal is to let you read what
+            an offer actually includes before you know whose it is.
           </p>
         </section>
 
         <section class="help-section">
-          <p class="help-section-title">Randomization</p>
+          <p class="help-section-title">Why the offer comes before the brand</p>
           <p class="help-text">
-            Offers are selected randomly within the selected category. The first
-            offer is randomized when the page loads. "Next offer →" picks
-            another random offer and won't immediately repeat the one you're
-            viewing. Randomness only means the order isn't ranked or
-            curated — it doesn't guarantee equal exposure, fairness, quality,
-            or suitability.
+            A familiar logo can make the same offer feel more trustworthy,
+            and an unfamiliar one can make it feel riskier, regardless of
+            what's actually being offered. QUE hides the provider name at
+            first so "what you're getting" and "what it costs" can be read
+            on their own terms. Nothing is permanently hidden — you can
+            reveal the brand any time.
           </p>
         </section>
 
         <section class="help-section">
-          <p class="help-section-title">What you're seeing</p>
+          <p class="help-section-title">Categories</p>
           <p class="help-text">
-            Brand and provider names stay hidden until you choose to reveal
-            them. That's a presentation choice meant to reduce brand-first
-            bias, not an attempt to hide who's behind an offer permanently.
-            The category you choose determines which pool of offers can
-            appear.
+            Offers are grouped into categories (AI, Music, Software, and so
+            on). Choosing a category only limits which pool of offers can
+            appear — it doesn't rank or prioritize anything within that
+            pool. Categories with no offers yet simply don't show up in the
+            filter.
           </p>
         </section>
 
         <section class="help-section">
-          <p class="help-section-title">Links &amp; sources</p>
+          <p class="help-section-title">How offers are chosen</p>
           <p class="help-text">
-            "Learn more →" takes you directly to that offer's official
-            pricing or product page. QUE's own "what you're getting" and
-            "what it costs" summaries are informational paraphrases, not a
-            provider's official wording.
+            Within a category, QUE uses a "shuffle-bag": every offer is
+            shown once, in a random order, before any offer repeats. Once
+            the whole pool has been shown, it reshuffles into a new random
+            order for the next cycle, and the last offer of one cycle is
+            never immediately followed by itself in the next. This process
+            doesn't rank, score, or prioritize any offer over another —
+            it's random order, not a leaderboard.
           </p>
         </section>
 
         <section class="help-section">
-          <p class="help-section-title">Updates &amp; accuracy</p>
+          <p class="help-section-title">Can payment affect placement?</p>
           <p class="help-text">
-            Pricing, features, limits, and availability change and can go
-            out of date here. Always confirm details on the linked official
-            page before deciding. Offers may be added, removed, or updated
-            over time.
+            No. Which offer appears, and in what order, is decided only by
+            the shuffle-bag described above. QUE doesn't currently have any
+            paid placement, sponsorship, or affiliate relationships — and if
+            that ever changes, it'll be disclosed in this panel. A
+            commercial relationship is never allowed to secretly influence
+            which offer shows up or when.
           </p>
         </section>
 
         <section class="help-section">
-          <p class="help-section-title">Commercial relationships</p>
+          <p class="help-section-title">Where offers come from</p>
           <p class="help-text">
-            QUE does not sell, endorse, recommend, rank, or guarantee any
-            offer shown, and isn't affiliated with any company represented
-            here unless explicitly stated. If a sponsorship, affiliate link,
-            paid placement, or other commercial relationship exists in the
-            future, it will be disclosed in this panel.
+            Offers are currently curated and entered manually, based on each
+            provider's own publicly available pricing and product pages —
+            there's no automated feed yet. Existing offers are reviewed and
+            updated as pricing or features change, but on no fixed schedule,
+            so the provider's own site is always the most current source.
+            See "Requests &amp; corrections" below to suggest an offer or
+            flag one that's out of date.
+          </p>
+        </section>
+
+        <section class="help-section">
+          <p class="help-section-title">What "have explored" means</p>
+          <p class="help-text">
+            Each offer shows how many times "Learn more" has been clicked
+            for it. This is browser-based tracking for the current MVP, not
+            verified unique-person data — it reflects clicks a browser has
+            recorded, not confirmed individual people, and it resets like
+            any other locally stored browser data if that storage is
+            cleared.
+          </p>
+        </section>
+
+        <section class="help-section">
+          <p class="help-section-title">Clicking "Learn more"</p>
+          <p class="help-text">
+            Clicking "Learn more" opens the provider's own official website
+            in a new tab, and — once per offer, per browser — counts toward
+            that offer's exploration number. QUE isn't affiliated with,
+            endorsed by, or representing any listed provider unless
+            explicitly stated.
+          </p>
+        </section>
+
+        <section class="help-section">
+          <p class="help-section-title">Accuracy &amp; updates</p>
+          <p class="help-text">
+            Pricing, features, limits, and availability change, and the
+            information shown here can fall out of date. Always confirm
+            details on the provider's own site before deciding anything.
+            The summaries on each card ("what you're getting", "what it
+            costs") are informational paraphrases — not the provider's
+            official wording.
+          </p>
+        </section>
+
+        <section class="help-section">
+          <p class="help-section-title">Requests &amp; corrections</p>
+          <p class="help-text">
+            Want an offer listed, or spotted something incorrect, outdated,
+            misleading, or broken?
+            <span class="help-placeholder">[add a contact channel here]</span>.
           </p>
         </section>
 
         <section class="help-section">
           <p class="help-section-title">Privacy</p>
           <p class="help-text">
-            QUE is a static widget. It doesn't require an account and
-            doesn't intentionally collect personal information.
+            QUE is a static, account-free widget. It doesn't collect
+            personal information like your name, email, or location. It
+            does use your browser's local storage to remember which offer
+            you're on and which offers you've already explored, so
+            refreshing the page doesn't lose your place or double-count a
+            click.
           </p>
         </section>
 
         <section class="help-section">
-          <p class="help-section-title">Corrections</p>
+          <p class="help-section-title">Limits of this information</p>
           <p class="help-text">
-            Spotted something incorrect, outdated, misleading, or broken?
-            Report it: <span class="help-placeholder">[add a contact channel here]</span>.
+            Everything on this page and every offer card is provided for
+            general information only. QUE doesn't guarantee that any offer,
+            price, or detail shown is current, complete, or error-free.
+            When something here and a provider's own site disagree, the
+            provider's site is correct.
           </p>
         </section>
       </div>

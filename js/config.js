@@ -12,3 +12,15 @@ const SHUFFLE_STORAGE_KEY = "que-widget:shuffle";                  // localStora
 const EXPLORE_STORAGE_KEY = "que-widget:explored";                 // localStorage key for saved exploration counts
 const EXPLORE_COOLDOWN_STORAGE_KEY = "que-widget:explore-cooldown"; // localStorage key for per-offer cooldown timestamps
 const EXPLORE_SEEN_STORAGE_KEY = "que-widget:explore-seen";        // localStorage key for offers this browser already registered
+
+// Bump this whenever exploration data in offers.js changes in a way that
+// makes old saved counts wrong (e.g. correcting fabricated starting
+// numbers). On mismatch, app.js wipes all saved exploration data so every
+// browser starts clean instead of carrying old values forward forever.
+const EXPLORE_DATA_VERSION = 2;
+const EXPLORE_VERSION_STORAGE_KEY = "que-widget:explore-version";
+
+// "Suggest an offer" opens this URL in a new tab. Replace with your real
+// form link (Tally, Google Form, Typeform, whatever) — nothing else needs
+// to change.
+const SUGGEST_FORM_URL = "https://YOUR-FORM-URL-HERE.com";

@@ -125,6 +125,34 @@ main.is-visible {
   color: var(--fg);
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-divider {
+  color: var(--rule);
+  font-size: 14px;
+  line-height: 1;
+  user-select: none;
+}
+
+.suggest-link {
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+
+.suggest-link:hover,
+.suggest-link:focus-visible {
+  color: var(--fg);
+}
+
 .help-btn {
   appearance: none;
   width: 20px;

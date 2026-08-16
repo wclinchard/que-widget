@@ -4,9 +4,27 @@ const availableCategories = Object.keys(OFFERS).filter(
 
 // Exploration counts persist locally by "category:provider" key, so a
 // refresh doesn't lose increments made this session. Offers without a
-// stored count keep the placeholder value from offers.js.
+// stored count keep the starting value from offers.js.
 function offerKey(offer) {
   return `${offer.category}:${offer.provider}`;
+}
+
+// If EXPLORE_DATA_VERSION has been bumped since this browser last saved
+// anything, wipe all saved exploration data (counts, cooldowns, seen-flags)
+// so it starts clean instead of carrying old/incorrect values forward.
+function resetExploreDataIfOutdated() {
+  try {
+    const savedVersion = localStorage.getItem(EXPLORE_VERSION_STORAGE_KEY);
+
+    if (savedVersion === String(EXPLORE_DATA_VERSION)) return;
+
+    localStorage.removeItem(EXPLORE_STORAGE_KEY);
+    localStorage.removeItem(EXPLORE_COOLDOWN_STORAGE_KEY);
+    localStorage.removeItem(EXPLORE_SEEN_STORAGE_KEY);
+    localStorage.setItem(EXPLORE_VERSION_STORAGE_KEY, String(EXPLORE_DATA_VERSION));
+  } catch (err) {
+    // localStorage unavailable (e.g. private browsing) — nothing to do
+  }
 }
 
 function loadExploreCounts() {
@@ -95,6 +113,7 @@ function markOfferExplored(offer) {
   }
 }
 
+resetExploreDataIfOutdated();
 applyStoredExploreCounts();
 
 // Shuffle-bag randomization: shuffleOrder holds a random permutation of
@@ -208,6 +227,8 @@ const helpPopoverEl = document.getElementById("helpPopover");
 const revealBtn = document.getElementById("revealBrand");
 const revealIconMarkup = revealBtn.innerHTML;
 const exploreCountEl = document.getElementById("exploreCount");
+const suggestLinkEl = document.getElementById("suggestOffer");
+suggestLinkEl.href = SUGGEST_FORM_URL;
 
 function formatCategoryLabel(key) {
   return key

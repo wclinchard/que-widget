@@ -1,7 +1,9 @@
 # QUE
 
-A tiny static widget that shows one random offer at a time, grouped by
-category, with the brand hidden until you choose to reveal it.
+A tiny static widget that shows one offer at a time, grouped by category,
+with the brand hidden until you choose to reveal it. Offers are shown via a
+shuffle-bag: every offer in a category is shown once before any repeat, then
+the bag reshuffles for a new cycle.
 
 No build step, no framework, no dependencies. Just HTML, CSS, and vanilla JS.
 
@@ -63,8 +65,9 @@ Edit `css/styles.css`.
 
 **...change behavior (randomization, transitions, timing, reveal logic)?**
 Edit `js/app.js`. Timing values (how long a fade takes, how long "Copied"
-stays on screen, etc.) live in `js/config.js` — change the number there
-rather than hunting for it in `app.js`.
+stays on screen, the exploration-count cooldown, `localStorage` key names,
+etc.) live in `js/config.js` — change the number there rather than hunting
+for it in `app.js`.
 
 ## Data model
 
@@ -76,7 +79,8 @@ OFFERS = {
       category: "...",   // must match the surrounding category key
       getting: ["...", "..."],
       costs: ["...", "..."],
-      link: "https://..."
+      link: "https://...",
+      explored: 0         // placeholder count shown as "N have explored"
     }
   ]
 }
@@ -87,13 +91,37 @@ DEFAULT_CATEGORY = "CATEGORY_KEY"  // which category shows on first load
 `provider` is intentionally never read into the DOM — the whole point of
 QUE is that you see the offer before the brand. `DEFAULT_CATEGORY` lives in
 `offers.js` next to the data it depends on, so the two can't drift out of
-sync.
+sync. `explored` is just a starting value — see "Local storage" below for
+how it actually changes at runtime.
 
 This shape scales the same way at 6 offers or at 6,000 — nothing about
 rendering, randomization, or the category filter assumes a particular size.
 If offer data ever needs to come from an API instead of a hardcoded file,
 only `offers.js` changes: it would fetch and populate `OFFERS` instead of
 declaring it inline, and `app.js` wouldn't need to know the difference.
+
+## Local storage
+
+QUE keeps a few small things in the browser's `localStorage` (keys are
+defined in `js/config.js`) so a refresh doesn't reset the experience:
+
+- **Shuffle position** — which offer you're on in the current category's
+  shuffle-bag cycle, so a refresh resumes instead of reshuffling.
+- **Exploration counts** — each offer's `explored` number, so increments
+  survive a refresh.
+- **Exploration cooldown** — a per-offer timestamp blocking rapid repeat
+  increments for 10 seconds (`EXPLORE_COOLDOWN_MS`).
+- **Exploration "seen" flags** — the actual anti-duplicate protection: once
+  this browser has registered an exploration for an offer, "Learn more"
+  never increments that offer's count again, cooldown or not.
+
+All of this is client-side bookkeeping for the MVP — it identifies a
+*browser*, not a person. Clearing storage, using another browser, or
+incognito mode resets it. It is **not** fraud prevention or unique-visitor
+verification. Swapping in real tracking later means replacing the
+`localStorage` reads/writes in `app.js` (`getExploreCount`,
+`incrementExploreCount`, `hasExploredOffer`, etc.) with API calls — the
+rest of the app doesn't need to change.
 
 ## How to run it
 

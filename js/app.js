@@ -2,6 +2,101 @@ const availableCategories = Object.keys(OFFERS).filter(
   key => OFFERS[key].length > 0
 );
 
+// Exploration counts persist locally by "category:provider" key, so a
+// refresh doesn't lose increments made this session. Offers without a
+// stored count keep the placeholder value from offers.js.
+function offerKey(offer) {
+  return `${offer.category}:${offer.provider}`;
+}
+
+function loadExploreCounts() {
+  try {
+    return JSON.parse(localStorage.getItem(EXPLORE_STORAGE_KEY)) || {};
+  } catch (err) {
+    return {};
+  }
+}
+
+function applyStoredExploreCounts() {
+  const stored = loadExploreCounts();
+
+  Object.keys(OFFERS).forEach(key => {
+    OFFERS[key].forEach(offer => {
+      const count = stored[offerKey(offer)];
+      if (typeof count === "number") {
+        offer.explored = count;
+      }
+    });
+  });
+}
+
+function saveExploreCount(offer) {
+  try {
+    const stored = loadExploreCounts();
+    stored[offerKey(offer)] = offer.explored;
+    localStorage.setItem(EXPLORE_STORAGE_KEY, JSON.stringify(stored));
+  } catch (err) {
+    // localStorage unavailable (e.g. private browsing) — nothing to do
+  }
+}
+
+// Per-offer cooldown so repeated "Learn more" clicks can't inflate the
+// count. Rate-limited locally for now — swap this check for a server
+// response later without touching anything that calls incrementExploreCount.
+function loadExploreCooldowns() {
+  try {
+    return JSON.parse(localStorage.getItem(EXPLORE_COOLDOWN_STORAGE_KEY)) || {};
+  } catch (err) {
+    return {};
+  }
+}
+
+function isExploreCountOnCooldown(offer) {
+  const lastIncrement = loadExploreCooldowns()[offerKey(offer)];
+  return typeof lastIncrement === "number" && Date.now() - lastIncrement < EXPLORE_COOLDOWN_MS;
+}
+
+function markExploreCooldown(offer) {
+  try {
+    const cooldowns = loadExploreCooldowns();
+    cooldowns[offerKey(offer)] = Date.now();
+    localStorage.setItem(EXPLORE_COOLDOWN_STORAGE_KEY, JSON.stringify(cooldowns));
+  } catch (err) {
+    // localStorage unavailable (e.g. private browsing) — nothing to do
+  }
+}
+
+// The actual protection: once this browser has registered an exploration
+// for an offer, it never counts again, no matter how many more times
+// "Learn more" is clicked — this session, after a refresh, or on a future
+// visit. This is client-side only (a cleared/incognito browser can explore
+// again) — it's anti-duplicate bookkeeping for the MVP, not real fraud
+// prevention or unique-visitor verification. Swap these two functions for
+// a server-backed check later without touching anything else.
+function loadExploreSeen() {
+  try {
+    return JSON.parse(localStorage.getItem(EXPLORE_SEEN_STORAGE_KEY)) || {};
+  } catch (err) {
+    return {};
+  }
+}
+
+function hasExploredOffer(offer) {
+  return !!loadExploreSeen()[offerKey(offer)];
+}
+
+function markOfferExplored(offer) {
+  try {
+    const seen = loadExploreSeen();
+    seen[offerKey(offer)] = true;
+    localStorage.setItem(EXPLORE_SEEN_STORAGE_KEY, JSON.stringify(seen));
+  } catch (err) {
+    // localStorage unavailable (e.g. private browsing) — nothing to do
+  }
+}
+
+applyStoredExploreCounts();
+
 // Shuffle-bag randomization: shuffleOrder holds a random permutation of
 // offer indices for the active category, and shufflePos points at the one
 // currently shown. Every offer in the bag is shown exactly once before any
@@ -239,14 +334,23 @@ function goBack() {
   });
 }
 
-// Local, in-memory exploration count. Swap these two functions for calls to
-// a real API later — nothing else in the app needs to change.
+// Exploration count, persisted to localStorage for now. Swap these two
+// functions for calls to a real API later — nothing else in the app needs
+// to change. incrementExploreCount is the only way the count changes, and
+// it enforces both the one-per-offer rule and the cooldown itself, so
+// every caller is protected the same way with no way to bypass it.
 function getExploreCount(offer) {
   return offer.explored;
 }
 
 function incrementExploreCount(offer) {
+  if (hasExploredOffer(offer)) return; // the actual protection — once per offer, ever
+  if (isExploreCountOnCooldown(offer)) return; // secondary throttle, kept for rapid double-clicks
+
   offer.explored += 1;
+  saveExploreCount(offer);
+  markExploreCooldown(offer);
+  markOfferExplored(offer);
 }
 
 function updateExploreCount(offer) {

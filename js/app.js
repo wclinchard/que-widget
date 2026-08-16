@@ -219,6 +219,8 @@ const gettingEl = document.getElementById("getting");
 const costsEl = document.getElementById("costs");
 const gettingFadeEl = gettingEl.nextElementSibling;
 const costsFadeEl = costsEl.nextElementSibling;
+const gettingArrowEl = document.getElementById("gettingScrollHint");
+const costsArrowEl = document.getElementById("costsScrollHint");
 const learnMoreEl = document.getElementById("learnMore");
 const nextBtn = document.getElementById("nextOffer");
 const backBtn = document.getElementById("backOffer");
@@ -380,11 +382,14 @@ function updateExploreCount(offer) {
   exploreCountEl.textContent = `${count.toLocaleString()} ${verb} explored`;
 }
 
-// Shows a bottom fade + "more below" hint on a list only when it's actually
-// tall enough to need scrolling — most offers never trigger this, it's a
-// safety net for whichever ones end up longer than usual.
-function updateScrollHint(listEl, fadeEl) {
-  fadeEl.classList.toggle("is-visible", listEl.scrollHeight > listEl.clientHeight + 1);
+// Shows a bottom fade plus a small arrow next to the section's label, only
+// when that list is actually tall enough to need scrolling — most offers
+// never trigger this, it's a safety net for whichever ones end up longer
+// than usual.
+function updateScrollHint(listEl, fadeEl, arrowEl) {
+  const isScrollable = listEl.scrollHeight > listEl.clientHeight + 1;
+  fadeEl.classList.toggle("is-visible", isScrollable);
+  arrowEl.classList.toggle("is-visible", isScrollable);
 }
 
 function render(index) {
@@ -400,8 +405,8 @@ function render(index) {
 
   learnMoreEl.href = offer.link;
   updateExploreCount(offer);
-  updateScrollHint(gettingEl, gettingFadeEl);
-  updateScrollHint(costsEl, costsFadeEl);
+  updateScrollHint(gettingEl, gettingFadeEl, gettingArrowEl);
+  updateScrollHint(costsEl, costsFadeEl, costsArrowEl);
 }
 
 function nextOffer() {

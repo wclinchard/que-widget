@@ -326,6 +326,20 @@ main.is-visible {
   color: var(--green);
 }
 
+.scroll-arrow {
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 18px;
+  line-height: 0;
+  vertical-align: -3px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.scroll-arrow.is-visible {
+  opacity: 1;
+}
+
 /* Offer content */
 
 ul {
@@ -376,7 +390,7 @@ li {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 36px;
+  height: 26px;
   background: linear-gradient(to bottom, transparent, var(--card-bg));
   pointer-events: none;
   opacity: 0;
@@ -385,18 +399,6 @@ li {
 
 .scroll-fade.is-visible {
   opacity: 1;
-}
-
-.scroll-fade::after {
-  content: "▾";
-  position: absolute;
-  left: 50%;
-  bottom: 1px;
-  transform: translateX(-50%);
-  font-size: 20px;
-  line-height: 1;
-  color: var(--fg);
-  opacity: 0.6;
 }
 
 /* Divider */

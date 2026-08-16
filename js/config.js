@@ -10,6 +10,7 @@ const RESIZE_RECALC_DEBOUNCE_MS = 150;   // wait after the window stops resizing
 
 const SHUFFLE_STORAGE_KEY = "que-widget:shuffle";                  // localStorage key for the saved shuffle position
 const HELP_OPEN_STORAGE_KEY = "que-widget:help-open";               // localStorage key for whether the ? panel was left open
+const CATEGORY_ORDER_STORAGE_KEY = "que-widget:category-order";     // localStorage key for the last category nav shuffle
 const EXPLORE_STORAGE_KEY = "que-widget:explored";                 // localStorage key for saved exploration counts
 const EXPLORE_COOLDOWN_STORAGE_KEY = "que-widget:explore-cooldown"; // localStorage key for per-offer cooldown timestamps
 const EXPLORE_SEEN_STORAGE_KEY = "que-widget:explore-seen";        // localStorage key for offers this browser already registered

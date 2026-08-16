@@ -1,10 +1,52 @@
+function loadPreviousCategoryOrder() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CATEGORY_ORDER_STORAGE_KEY));
+    return Array.isArray(saved) ? saved : null;
+  } catch (err) {
+    return null;
+  }
+}
+
+function saveCategoryOrder(order) {
+  try {
+    localStorage.setItem(CATEGORY_ORDER_STORAGE_KEY, JSON.stringify(order));
+  } catch (err) {
+    // localStorage unavailable (e.g. private browsing) — nothing to do
+  }
+}
+
+// Shuffles the category keys, retrying until no category lands in the same
+// position it held last reload — a full derangement vs. the previous
+// order, not just "a random shuffle that could coincidentally match". If
+// the set of categories itself changed size since last time, there's
+// nothing meaningful to compare against, so any shuffle is fine.
+function shuffleCategoriesAvoidingRepeat(keys, previousOrder) {
+  let order = shuffleInPlace(keys.slice());
+
+  if (!previousOrder || previousOrder.length !== order.length) {
+    return order;
+  }
+
+  let attempts = 0;
+  while (order.some((key, i) => key === previousOrder[i]) && attempts < 100) {
+    order = shuffleInPlace(keys.slice());
+    attempts++;
+  }
+
+  return order;
+}
+
 // Every category shows in the nav, even ones with no offers yet — render()
 // shows an empty-state message for those instead of an offer card. Shuffled
 // once per page load, then left alone — the category nav order only
 // changes on a fresh load, never when switching categories or clicking
 // Next. Unrelated to offer randomization (see shuffleInPlace's other use
 // below, for the offer shuffle-bag).
-const availableCategories = shuffleInPlace(Object.keys(OFFERS));
+const availableCategories = shuffleCategoriesAvoidingRepeat(
+  Object.keys(OFFERS),
+  loadPreviousCategoryOrder()
+);
+saveCategoryOrder(availableCategories);
 
 // Exploration counts persist locally by "category:provider" key, so a
 // refresh doesn't lose increments made this session. Offers without a

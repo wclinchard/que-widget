@@ -218,6 +218,8 @@ const categoryFilterEl = document.getElementById("categoryFilter");
 const offerBodyEl = document.getElementById("offerBody");
 const gettingEl = document.getElementById("getting");
 const costsEl = document.getElementById("costs");
+const gettingFadeEl = gettingEl.nextElementSibling;
+const costsFadeEl = costsEl.nextElementSibling;
 const learnMoreEl = document.getElementById("learnMore");
 const nextBtn = document.getElementById("nextOffer");
 const backBtn = document.getElementById("backOffer");
@@ -377,6 +379,13 @@ function updateExploreCount(offer) {
   exploreCountEl.textContent = `${getExploreCount(offer).toLocaleString()} have explored`;
 }
 
+// Shows a bottom fade + "more below" hint on a list only when it's actually
+// tall enough to need scrolling — most offers never trigger this, it's a
+// safety net for whichever ones end up longer than usual.
+function updateScrollHint(listEl, fadeEl) {
+  fadeEl.classList.toggle("is-visible", listEl.scrollHeight > listEl.clientHeight + 1);
+}
+
 function render(index) {
   const offer = categoryOffers[index];
 
@@ -390,6 +399,8 @@ function render(index) {
 
   learnMoreEl.href = offer.link;
   updateExploreCount(offer);
+  updateScrollHint(gettingEl, gettingFadeEl);
+  updateScrollHint(costsEl, costsFadeEl);
 }
 
 function nextOffer() {

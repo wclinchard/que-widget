@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QUE</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<main>
+
+  <header>
+    <div class="header-row">
+      <p class="brand">QUE</p>
+
+      <button
+        id="helpBtn"
+        class="help-btn"
+        type="button"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+      >
+        ?
+      </button>
+    </div>
+
+    <div id="helpPopover" class="help-popover" role="dialog" aria-hidden="true">
+      <div class="help-scroll">
+        <p class="help-title">How QUE works</p>
+
+        <section class="help-section">
+          <p class="help-section-title">How it works</p>
+          <p class="help-text">
+            QUE shows one offer at a time instead of ranking or comparing brands.
+            Pick a category and QUE displays a single offer drawn from that
+            category's pool.
+          </p>
+        </section>
+
+        <section class="help-section">
+          <p class="help-section-title">Randomization</p>
+          <p class="help-text">
+            Offers are selected randomly within the selected category. The first
+            offer is randomized when the page loads. "Next offer →" picks
+            another random offer and won't immediately repeat the one you're
+            viewing. Randomness only means the order isn't ranked or
+            curated — it doesn't guarantee equal exposure, fairness, quality,
+            or suitability.
+          </p>
+        </section>
+
+        <section class="help-section">
+          <p class="help-section-title">What you're seeing</p>
+          <p class="help-text">
+            Brand and provider names stay hidden until you choose to reveal
+            them. That's a presentation choice meant to reduce brand-first
+            bias, not an attempt to hide who's behind an offer permanently.
+            The category you choose determines which pool of offers can
+            appear.
+          </p>
+        </section>
+
+        <section class="help-section">
+          <p class="help-section-title">Links &amp; sources</p>
+          <p class="help-text">
+            "Learn more →" takes you directly to that offer's official
+            pricing or product page. QUE's own "what you're getting" and
+            "what it costs" summaries are informational paraphrases, not a
+            provider's official wording.
+          </p>
+        </section>
+
+        <section class="help-section">
+          <p class="help-section-title">Updates &amp; accuracy</p>
+          <p class="help-text">
+            Pricing, features, limits, and availability change and can go
+            out of date here. Always confirm details on the linked official
+            page before deciding. Offers may be added, removed, or updated
+            over time.
+          </p>
+        </section>
+
+        <section class="help-section">
+          <p class="help-section-title">Commercial relationships</p>
+          <p class="help-text">
+            QUE does not sell, endorse, recommend, rank, or guarantee any
+            offer shown, and isn't affiliated with any company represented
+            here unless explicitly stated. If a sponsorship, affiliate link,
+            paid placement, or other commercial relationship exists in the
+            future, it will be disclosed in this panel.
+          </p>
+        </section>
+
+        <section class="help-section">
+          <p class="help-section-title">Privacy</p>
+          <p class="help-text">
+            QUE is a static widget. It doesn't require an account and
+            doesn't intentionally collect personal information.
+          </p>
+        </section>
+
+        <section class="help-section">
+          <p class="help-section-title">Corrections</p>
+          <p class="help-text">
+            Spotted something incorrect, outdated, misleading, or broken?
+            Report it: <span class="help-placeholder">[add a contact channel here]</span>.
+          </p>
+        </section>
+      </div>
+    </div>
+  </header>
+
+  <ul id="categoryFilter" class="category-filter"></ul>
+
+  <div id="offerBody" class="offer-body">
+    <button
+      id="copyOffer"
+      class="copy-btn"
+      type="button"
+    >
+      Copy
+    </button>
+
+    <section>
+      <p class="label getting-label">WHAT YOU'RE GETTING</p>
+      <ul id="getting" class="getting offer-fade"></ul>
+    </section>
+
+    <section>
+      <p class="label costs-label">WHAT IT COSTS</p>
+      <ul id="costs" class="costs offer-fade"></ul>
+    </section>
+
+    <button
+      id="revealBrand"
+      class="reveal"
+      type="button"
+      aria-label="Reveal brand"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+    </button>
+  </div>
+
+  <hr class="rule">
+
+  <div class="row">
+    <a
+      id="learnMore"
+      class="link"
+      href="#"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Learn more →
+    </a>
+
+    <div class="row-actions">
+      <button
+        id="backOffer"
+        class="back"
+        type="button"
+        autocomplete="off"
+      >
+        ← Back
+      </button>
+
+      <button
+        id="nextOffer"
+        class="next"
+        type="button"
+      >
+        Next offer →
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<script src="offers.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>

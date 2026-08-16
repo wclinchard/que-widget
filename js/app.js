@@ -376,7 +376,9 @@ function incrementExploreCount(offer) {
 }
 
 function updateExploreCount(offer) {
-  exploreCountEl.textContent = `${getExploreCount(offer).toLocaleString()} have explored`;
+  const count = getExploreCount(offer);
+  const verb = count === 1 ? "has" : "have";
+  exploreCountEl.textContent = `${count.toLocaleString()} ${verb} explored`;
 }
 
 // Shows a bottom fade + "more below" hint on a list only when it's actually

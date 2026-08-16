@@ -327,13 +327,20 @@ main.is-visible {
 }
 
 .scroll-arrow {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  position: relative;
+  top: -2px;
   margin-left: 5px;
-  font-size: 18px;
-  line-height: 0;
-  vertical-align: -3px;
   opacity: 0;
   transition: opacity 0.15s ease;
+}
+
+.scroll-arrow svg {
+  width: 14px;
+  height: 14px;
+  display: block;
 }
 
 .scroll-arrow.is-visible {

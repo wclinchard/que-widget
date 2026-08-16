@@ -73,7 +73,10 @@ main.is-visible {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 14px;
-  padding: 26px 24px 34px;
+  /* Bottom padding must stay >= the reveal icon's footprint (bottom + height,
+     see button.reveal below) plus a few px of clearance, at every breakpoint —
+     otherwise the icon/explore-count row can overlap the costs list text. */
+  padding: 26px 24px 38px;
 }
 
 .copy-btn {
@@ -501,6 +504,6 @@ button:focus-visible {
   }
 
   .offer-body {
-    padding: 20px 18px 28px;
+    padding: 20px 18px 38px;
   }
 }

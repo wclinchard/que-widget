@@ -17,10 +17,11 @@
 //   getting: [...],
 //   costs: [...],
 //   link: "...",
-//   explored: 0         // placeholder exploration count, shown as "N have explored"
-//                        // and incremented locally on "Learn more" clicks.
-//                        // Swap this for a real shared count later (e.g. fetched
-//                        // from an API) without changing how it's displayed.
+//   explored: 0         // starts at 0 — never fabricate a number here. Shown as
+//                        // "N have explored" and incremented only by real
+//                        // "Learn more" clicks (see js/app.js). Swap this for a
+//                        // real shared count later without changing how it's
+//                        // displayed.
 // }
 
 const OFFERS = {
@@ -43,7 +44,7 @@ const OFFERS = {
         "Pro — $200/mo"
       ],
       link: "https://openai.com/chatgpt/pricing/",
-      explored: 1400
+      explored: 0
     },
     {
       provider: "Anthropic",
@@ -62,7 +63,7 @@ const OFFERS = {
         "Team — from $25/user/mo"
       ],
       link: "https://claude.com/pricing",
-      explored: 2300
+      explored: 0
     },
     {
       provider: "Google",
@@ -81,7 +82,7 @@ const OFFERS = {
         "Ultra — $99.99/mo (5x) or $199.99/mo (20x)"
       ],
       link: "https://gemini.google/subscriptions/",
-      explored: 980
+      explored: 0
     },
     {
       provider: "Perplexity",
@@ -99,7 +100,7 @@ const OFFERS = {
         "Max — $200/mo"
       ],
       link: "https://www.perplexity.ai/pro",
-      explored: 640
+      explored: 0
     },
     {
       provider: "xAI",
@@ -118,7 +119,7 @@ const OFFERS = {
         "Heavy — $300/mo"
       ],
       link: "https://x.ai/grok",
-      explored: 1150
+      explored: 0
     },
     {
       provider: "Cursor",
@@ -137,7 +138,7 @@ const OFFERS = {
         "Ultra — $200/mo"
       ],
       link: "https://cursor.com/pricing",
-      explored: 3100
+      explored: 0
     }
   ],
 

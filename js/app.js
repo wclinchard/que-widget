@@ -278,7 +278,6 @@ function applyState(category, index) {
   setRevealStage("hidden");
 
   if (categoryChanged) {
-    offerBodyEl.style.minHeight = "";
     reserveOfferHeight();
     renderCategoryFilter();
   } else {
@@ -431,7 +430,13 @@ async function copyOffer() {
   }, COPY_RESET_TIMEOUT_MS);
 }
 
+// Reserves enough card height for the tallest offer in the active category
+// so the divider/footer never shifts when switching offers. Always resets
+// first so it re-measures at the current viewport width — callers never
+// need to remember to reset it themselves.
 function reserveOfferHeight() {
+  offerBodyEl.style.minHeight = "";
+
   let max = 0;
 
   for (let i = 0; i < categoryOffers.length; i++) {
@@ -499,6 +504,13 @@ updateBackButton();
 saveShuffleState();
 
 window.addEventListener("pageshow", updateBackButton);
+
+let resizeTimer = null;
+
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(reserveOfferHeight, RESIZE_RECALC_DEBOUNCE_MS);
+});
 
 requestAnimationFrame(() => {
   requestAnimationFrame(() => {

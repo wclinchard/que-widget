@@ -80,7 +80,8 @@ OFFERS = {
       getting: ["...", "..."],
       costs: ["...", "..."],
       link: "https://...",
-      explored: 0         // placeholder count shown as "N have explored"
+      explored: 0         // starting count, shown as "N have explored" — must
+                          // start at 0, never a fabricated number
     }
   ]
 }

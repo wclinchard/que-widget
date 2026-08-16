@@ -57,12 +57,12 @@ function setRevealStage(stage) {
   if (stage === "confirm") {
     revealBtn.textContent = "Reveal?";
     revealBtn.classList.add("is-confirming");
-    revealTimer = setTimeout(() => setRevealStage("hidden"), 2500);
+    revealTimer = setTimeout(() => setRevealStage("hidden"), REVEAL_CONFIRM_TIMEOUT_MS);
   } else if (stage === "revealed") {
     const offer = categoryOffers[current];
     revealBtn.textContent = offer ? offer.provider : "";
     revealBtn.classList.add("is-revealed");
-    revealTimer = setTimeout(() => setRevealStage("hidden"), 2200);
+    revealTimer = setTimeout(() => setRevealStage("hidden"), REVEAL_RESET_TIMEOUT_MS);
   } else {
     revealBtn.innerHTML = revealIconMarkup;
   }
@@ -109,7 +109,7 @@ function transition(work) {
       costsEl.classList.remove("is-hidden");
       animating = false;
     });
-  }, 130);
+  }, TRANSITION_MS);
 }
 
 function switchCategory(key) {
@@ -186,6 +186,7 @@ async function copyText(text) {
   try {
     const ta = document.createElement("textarea");
     ta.value = text;
+    ta.spellcheck = false;
     ta.style.position = "fixed";
     ta.style.opacity = "0";
     document.body.appendChild(ta);
@@ -213,7 +214,7 @@ async function copyOffer() {
   copyResetTimer = setTimeout(() => {
     copyBtn.textContent = "Copy";
     copyBtn.classList.remove("is-copied");
-  }, 1600);
+  }, COPY_RESET_TIMEOUT_MS);
 }
 
 function reserveOfferHeight() {

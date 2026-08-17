@@ -538,12 +538,24 @@ button.next {
   padding: 0;
   color: var(--muted);
   cursor: pointer;
-  transition: color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    opacity 0.15s ease;
 }
 
 button.next:hover,
 button.next:focus-visible {
   color: var(--fg);
+}
+
+button.next.is-disabled {
+  opacity: 0.32;
+  cursor: not-allowed;
+}
+
+button.next.is-disabled:hover,
+button.next.is-disabled:focus-visible {
+  color: var(--muted);
 }
 
 button.back {

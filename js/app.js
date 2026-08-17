@@ -336,8 +336,6 @@ const cardActionsEl = document.getElementById("cardActions");
 const emptyStateEl = document.getElementById("emptyState");
 const gettingSectionEl = document.getElementById("gettingSection");
 const costsSectionEl = document.getElementById("costsSection");
-const ruleEl = document.getElementById("rule");
-const rowEl = document.getElementById("row");
 const gettingEl = document.getElementById("getting");
 const costsEl = document.getElementById("costs");
 const gettingFadeEl = gettingEl.nextElementSibling;
@@ -391,9 +389,25 @@ function renderCategoryFilter() {
   categoryFilterEl.scrollTo({ left: 0, behavior: "smooth" });
 }
 
+// The next Back click would restore history's top entry — if that entry
+// points at a category with no offers, there's nothing there to go back
+// to, so Back stays disabled rather than dropping you into an empty card.
+function nextBackTargetIsEmpty() {
+  if (history.length === 0) return false;
+  const target = history[history.length - 1];
+  return OFFERS[target.category].length === 0;
+}
+
 function updateBackButton() {
-  backBtn.disabled = history.length === 0;
-  backBtn.classList.toggle("is-disabled", history.length === 0);
+  const disabled = history.length === 0 || nextBackTargetIsEmpty();
+  backBtn.disabled = disabled;
+  backBtn.classList.toggle("is-disabled", disabled);
+}
+
+function updateNextButton() {
+  const noNextOffer = categoryOffers.length <= 1;
+  nextBtn.disabled = noNextOffer;
+  nextBtn.classList.toggle("is-disabled", noNextOffer);
 }
 
 function setRevealStage(stage) {
@@ -462,6 +476,7 @@ function transition(work) {
   setTimeout(() => {
     work();
     updateBackButton();
+    updateNextButton();
 
     requestAnimationFrame(() => {
       gettingEl.classList.remove("is-hidden");
@@ -481,7 +496,7 @@ function switchCategory(key) {
 }
 
 function goBack() {
-  if (history.length === 0 || animating) return;
+  if (history.length === 0 || animating || nextBackTargetIsEmpty()) return;
 
   transition(() => {
     const target = history.pop();
@@ -542,8 +557,10 @@ function render(index) {
     gettingSectionEl.hidden = true;
     costsSectionEl.hidden = true;
     revealBtn.hidden = true;
-    ruleEl.hidden = true;
-    rowEl.hidden = true; // hides Learn more, Back, and Next together
+    // Divider and the Back/Next row stay put — Back/Next manage their own
+    // enabled state, so they're still how you navigate away from here.
+    // Only "Learn more" hides, since there's no offer link to show.
+    learnMoreEl.hidden = true;
     exploreCountEl.textContent = "";
     gettingEl.innerHTML = "";
     costsEl.innerHTML = "";
@@ -555,8 +572,7 @@ function render(index) {
   gettingSectionEl.hidden = false;
   costsSectionEl.hidden = false;
   revealBtn.hidden = false;
-  ruleEl.hidden = false;
-  rowEl.hidden = false;
+  learnMoreEl.hidden = false;
 
   gettingEl.innerHTML = offer.getting
     .map(item => `<li>${item}</li>`)
@@ -791,6 +807,7 @@ renderCategoryFilter();
 render(current);
 reserveOfferHeight();
 updateBackButton();
+updateNextButton();
 saveShuffleState();
 updateUrlHash(categoryOffers[current]);
 
@@ -800,7 +817,10 @@ if (loadHelpOpenState()) {
   openHelp();
 }
 
-window.addEventListener("pageshow", updateBackButton);
+window.addEventListener("pageshow", () => {
+  updateBackButton();
+  updateNextButton();
+});
 
 let resizeTimer = null;
 

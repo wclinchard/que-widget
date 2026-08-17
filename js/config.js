@@ -22,7 +22,7 @@ const EXPLORE_SEEN_STORAGE_KEY = "que-widget:explore-seen";        // localStora
 const EXPLORE_DATA_VERSION = 2;
 const EXPLORE_VERSION_STORAGE_KEY = "que-widget:explore-version";
 
-// "Suggest an offer" opens this URL in a new tab. Replace with your real
-// form link (Tally, Google Form, Typeform, whatever) — nothing else needs
-// to change.
-const SUGGEST_FORM_URL = "https://YOUR-FORM-URL-HERE.com";
+// "Suggest an offer" opens this URL in a new tab — the public Notion form
+// backing the "QUE Offer Submissions" database. Replace with a different
+// form link if it ever moves; nothing else needs to change.
+const SUGGEST_FORM_URL = "https://quediscovery.notion.site/5a4e43ab4e944d5db07b5db78666abe6";

@@ -531,10 +531,6 @@ function updateExploreCount(offer) {
   exploreCountEl.textContent = `${count.toLocaleString()} ${verb} explored`;
 }
 
-// Shows a bottom fade plus a small arrow next to the section's label, only
-// when that list is actually tall enough to need scrolling — most offers
-// never trigger this, it's a safety net for whichever ones end up longer
-// than usual.
 // Shows the fade + arrow only while there's actually more to scroll to —
 // re-checked against real scroll position (not just "is this scrollable
 // at all"), otherwise the hint stayed on forever once a list became

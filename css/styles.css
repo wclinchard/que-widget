@@ -496,11 +496,6 @@ li {
   gap: 20px;
 }
 
-/* Same [hidden]-vs-display:flex specificity tie as .card-actions/button.reveal. */
-.row[hidden] {
-  display: none;
-}
-
 .row-actions {
   display: flex;
   align-items: center;

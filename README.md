@@ -1,24 +1,26 @@
 # QUE
 
-QUE is an offer discovery system — a tiny static widget for seeing what
-you'd actually get and what it costs, one offer at a time, before you know
-whose it is. "Offer" isn't limited to deals or discounts: it can be a
-pricing plan, a product, a service, a subscription — anything with a clear
-"here's what you get, here's what it costs" shape. No ranked list, no wall
-of competing logos.
+QUE is a brand-neutral discovery system — a tiny static widget for seeing
+what you'd actually get and what it costs, one offer at a time, before you
+know whose it is. "Offer" isn't limited to deals or discounts: it covers
+products, services, subscriptions, and normal pricing plans — anything with
+a clear "here's what you get, here's what it costs" shape. No ranked list,
+no wall of competing logos.
 
 The problem it's solving: brand recognition changes how people read the
 same offer. A familiar logo can make an offer feel safer, an unfamiliar one
 can make it feel riskier, regardless of what's actually in the offer. QUE
-shows you "what you're getting" and "what it costs" first, and lets you
-reveal the brand — deliberately, in two clicks — once you've actually read
-it.
+gives every offer the same even playing field — "what you're getting" and
+"what it costs" first, brand revealed only once you've actually read it,
+deliberately, in two clicks.
 
-QUE doesn't rank, recommend, or sell placement; offers within a category
-are shown in a random, non-repeating order (see "How it works" below).
-Anyone can submit an offer. Where QUE does make money, it's usage-based —
-providers are charged per redirect, not for visibility or a subscription
-(see "Commercial model" below).
+QUE doesn't rank, recommend, or sell placement — there's no pay-to-play:
+offers within a category are shown in a random, non-repeating order (see
+"How it works" below), and no offer can pay to appear more, appear first,
+or skip that order. Anyone can submit an offer. Where QUE does make money,
+it's usage-based — the current model charges providers per redirect, $10
+per 1,000 redirects, not for visibility or a subscription (see "Commercial
+model" below).
 
 No build step, no framework, no dependencies. Just HTML, CSS, and vanilla JS
 — open `index.html` and it runs.
@@ -82,15 +84,16 @@ space on every shorter offer.
 
 ## Commercial model
 
-QUE doesn't sell placement, ranking, or visibility — no offer can pay to
-appear more often, appear first, or skip the shuffle-bag described above.
+QUE doesn't sell placement, ranking, or visibility — there's no
+pay-to-play: no offer can pay to appear more often, appear first, or skip
+the shuffle-bag described above.
 
-Where money does come in: the starting model charges providers per
+Where money does come in: the current model charges providers per
 redirect — a click that sends a visitor to their site via "Learn more" —
 rather than a flat subscription or a fee tied to exposure. The current
-starting rate is **$10 per 1,000 redirects**. Cost scales with traffic
-actually delivered, not with how often an offer is shown or where it lands
-in the shuffle. Any future sponsorship, affiliate relationship, or other
+rate is **$10 per 1,000 redirects**. Cost scales with traffic actually
+delivered, not with how often an offer is shown or where it lands in the
+shuffle. Any future sponsorship, affiliate relationship, or other
 commercial arrangement gets disclosed in the `?` panel before it affects
 anything user-facing.
 

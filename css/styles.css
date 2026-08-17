@@ -146,7 +146,12 @@ main.is-visible {
   transition: color 0.15s ease;
 }
 
-.copy-btn:hover,
+@media (hover: hover) {
+  .copy-btn:hover {
+    color: var(--fg);
+  }
+}
+
 .copy-btn:focus-visible {
   color: var(--fg);
 }
@@ -196,7 +201,12 @@ main.is-visible {
   transition: color 0.15s ease;
 }
 
-.suggest-link:hover,
+@media (hover: hover) {
+  .suggest-link:hover {
+    color: var(--fg);
+  }
+}
+
 .suggest-link:focus-visible {
   color: var(--fg);
 }
@@ -223,7 +233,13 @@ main.is-visible {
     border-color 0.15s ease;
 }
 
-.help-btn:hover,
+@media (hover: hover) {
+  .help-btn:hover {
+    color: var(--fg);
+    border-color: var(--fg);
+  }
+}
+
 .help-btn:focus-visible,
 .help-btn.is-active {
   color: var(--fg);
@@ -317,6 +333,7 @@ main.is-visible {
   align-items: center;
   flex-wrap: nowrap;
   overflow-x: auto;
+  touch-action: pan-x;
   scrollbar-width: none;
   -ms-overflow-style: none;
   gap: 6px 8px;
@@ -360,7 +377,13 @@ main.is-visible {
     background-color 0.15s ease;
 }
 
-.category-btn:hover,
+@media (hover: hover) {
+  .category-btn:hover {
+    color: var(--fg);
+    background: rgba(255, 255, 255, 0.07);
+  }
+}
+
 .category-btn:focus-visible {
   color: var(--fg);
   background: rgba(255, 255, 255, 0.07);
@@ -371,7 +394,13 @@ main.is-visible {
   background: rgba(77, 163, 255, 0.14);
 }
 
-.category-btn.is-active:hover,
+@media (hover: hover) {
+  .category-btn.is-active:hover {
+    color: var(--blue);
+    background: rgba(77, 163, 255, 0.2);
+  }
+}
+
 .category-btn.is-active:focus-visible {
   color: var(--blue);
   background: rgba(77, 163, 255, 0.2);
@@ -520,7 +549,13 @@ a.link {
     color 0.15s ease;
 }
 
-a.link:hover,
+@media (hover: hover) {
+  a.link:hover {
+    opacity: 1;
+    color: var(--blue);
+  }
+}
+
 a.link:focus-visible {
   opacity: 1;
   color: var(--blue);
@@ -538,7 +573,12 @@ button.next {
     opacity 0.15s ease;
 }
 
-button.next:hover,
+@media (hover: hover) {
+  button.next:hover {
+    color: var(--fg);
+  }
+}
+
 button.next:focus-visible {
   color: var(--fg);
 }
@@ -548,7 +588,12 @@ button.next.is-disabled {
   cursor: not-allowed;
 }
 
-button.next.is-disabled:hover,
+@media (hover: hover) {
+  button.next.is-disabled:hover {
+    color: var(--muted);
+  }
+}
+
 button.next.is-disabled:focus-visible {
   color: var(--muted);
 }
@@ -565,7 +610,12 @@ button.back {
     opacity 0.15s ease;
 }
 
-button.back:hover,
+@media (hover: hover) {
+  button.back:hover {
+    color: var(--fg);
+  }
+}
+
 button.back:focus-visible {
   color: var(--fg);
 }
@@ -575,7 +625,12 @@ button.back.is-disabled {
   cursor: not-allowed;
 }
 
-button.back.is-disabled:hover,
+@media (hover: hover) {
+  button.back.is-disabled:hover {
+    color: var(--muted);
+  }
+}
+
 button.back.is-disabled:focus-visible {
   color: var(--muted);
 }
@@ -618,7 +673,13 @@ button.reveal svg {
   display: block;
 }
 
-button.reveal:hover,
+@media (hover: hover) {
+  button.reveal:hover {
+    opacity: 1;
+    color: var(--fg);
+  }
+}
+
 button.reveal:focus-visible {
   opacity: 1;
   color: var(--fg);
@@ -635,7 +696,13 @@ button.reveal.is-revealed {
   cursor: not-allowed;
 }
 
-button.reveal.is-revealed:hover,
+@media (hover: hover) {
+  button.reveal.is-revealed:hover {
+    opacity: 0.9;
+    color: var(--green);
+  }
+}
+
 button.reveal.is-revealed:focus-visible {
   opacity: 0.9;
   color: var(--green);

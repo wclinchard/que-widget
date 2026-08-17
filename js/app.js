@@ -385,11 +385,12 @@ function renderCategoryFilter() {
   // The active pill is always freshly pinned at the far left — make sure
   // it's actually in view instead of leaving the row scrolled wherever it
   // happened to be (e.g. after picking a pill that was scrolled off to
-  // the right). Instant, not smooth: an animated scroll left in-flight
-  // when the next tap lands gets read by mobile browsers as "stop
-  // scrolling" and the tap is swallowed instead of hitting the pill
-  // underneath — the widget looks stalled after the first switch.
-  categoryFilterEl.scrollTo({ left: 0, behavior: "auto" });
+  // the right). Plain scrollLeft, not scrollTo(): Safari's Element.scrollTo
+  // has had reliability gaps, especially called right after an innerHTML
+  // swap, and any animated ("smooth") scroll left in-flight when the next
+  // tap lands can get read by mobile browsers as "stop scrolling" and
+  // swallow the tap instead of hitting the pill underneath.
+  categoryFilterEl.scrollLeft = 0;
 }
 
 // The next Back click would restore history's top entry — if that entry

@@ -1,18 +1,50 @@
-function loadPreviousCategoryOrder() {
+// Every localStorage read/write in this file goes through these four —
+// storage can throw (private browsing, quota exceeded, disabled entirely),
+// and every call site below just wants "give me the value, or a safe
+// default" without repeating its own try/catch.
+function readStorage(key) {
   try {
-    const saved = JSON.parse(localStorage.getItem(CATEGORY_ORDER_STORAGE_KEY));
-    return Array.isArray(saved) ? saved : null;
+    return localStorage.getItem(key);
   } catch (err) {
     return null;
   }
 }
 
-function saveCategoryOrder(order) {
+function writeStorage(key, value) {
   try {
-    localStorage.setItem(CATEGORY_ORDER_STORAGE_KEY, JSON.stringify(order));
+    localStorage.setItem(key, value);
   } catch (err) {
     // localStorage unavailable (e.g. private browsing) — nothing to do
   }
+}
+
+function removeStorage(key) {
+  try {
+    localStorage.removeItem(key);
+  } catch (err) {
+    // localStorage unavailable (e.g. private browsing) — nothing to do
+  }
+}
+
+function readJSON(key) {
+  try {
+    return JSON.parse(readStorage(key));
+  } catch (err) {
+    return null;
+  }
+}
+
+function writeJSON(key, value) {
+  writeStorage(key, JSON.stringify(value));
+}
+
+function loadPreviousCategoryOrder() {
+  const saved = readJSON(CATEGORY_ORDER_STORAGE_KEY);
+  return Array.isArray(saved) ? saved : null;
+}
+
+function saveCategoryOrder(order) {
+  writeJSON(CATEGORY_ORDER_STORAGE_KEY, order);
 }
 
 // Shuffles the category keys, retrying until no category lands in the same
@@ -87,9 +119,6 @@ function updateUrlHash(offer) {
   const hash = offer ? "#" + encodeURIComponent(offerKey(offer)) : "";
 
   if (location.hash !== hash) {
-    // window.history, not the bare `history` identifier — this file also
-    // declares a top-level `history` (the back-navigation stack) that
-    // shadows the global window.history for the rest of this script.
     // Some browsers (e.g. Safari) can throw here — rate limiting rapid
     // calls, or restrictions in a private/locked-down context — and this
     // runs inside transition()'s work(), so an uncaught throw here would
@@ -111,26 +140,17 @@ function buildShareUrl(offer) {
 // anything, wipe all saved exploration data (counts, cooldowns, seen-flags)
 // so it starts clean instead of carrying old/incorrect values forward.
 function resetExploreDataIfOutdated() {
-  try {
-    const savedVersion = localStorage.getItem(EXPLORE_VERSION_STORAGE_KEY);
+  const savedVersion = readStorage(EXPLORE_VERSION_STORAGE_KEY);
+  if (savedVersion === String(EXPLORE_DATA_VERSION)) return;
 
-    if (savedVersion === String(EXPLORE_DATA_VERSION)) return;
-
-    localStorage.removeItem(EXPLORE_STORAGE_KEY);
-    localStorage.removeItem(EXPLORE_COOLDOWN_STORAGE_KEY);
-    localStorage.removeItem(EXPLORE_SEEN_STORAGE_KEY);
-    localStorage.setItem(EXPLORE_VERSION_STORAGE_KEY, String(EXPLORE_DATA_VERSION));
-  } catch (err) {
-    // localStorage unavailable (e.g. private browsing) — nothing to do
-  }
+  removeStorage(EXPLORE_STORAGE_KEY);
+  removeStorage(EXPLORE_COOLDOWN_STORAGE_KEY);
+  removeStorage(EXPLORE_SEEN_STORAGE_KEY);
+  writeStorage(EXPLORE_VERSION_STORAGE_KEY, String(EXPLORE_DATA_VERSION));
 }
 
 function loadExploreCounts() {
-  try {
-    return JSON.parse(localStorage.getItem(EXPLORE_STORAGE_KEY)) || {};
-  } catch (err) {
-    return {};
-  }
+  return readJSON(EXPLORE_STORAGE_KEY) || {};
 }
 
 function applyStoredExploreCounts() {
@@ -147,24 +167,16 @@ function applyStoredExploreCounts() {
 }
 
 function saveExploreCount(offer) {
-  try {
-    const stored = loadExploreCounts();
-    stored[offerKey(offer)] = offer.explored;
-    localStorage.setItem(EXPLORE_STORAGE_KEY, JSON.stringify(stored));
-  } catch (err) {
-    // localStorage unavailable (e.g. private browsing) — nothing to do
-  }
+  const stored = loadExploreCounts();
+  stored[offerKey(offer)] = offer.explored;
+  writeJSON(EXPLORE_STORAGE_KEY, stored);
 }
 
 // Per-offer cooldown so repeated "Learn more" clicks can't inflate the
 // count. Rate-limited locally for now — swap this check for a server
 // response later without touching anything that calls incrementExploreCount.
 function loadExploreCooldowns() {
-  try {
-    return JSON.parse(localStorage.getItem(EXPLORE_COOLDOWN_STORAGE_KEY)) || {};
-  } catch (err) {
-    return {};
-  }
+  return readJSON(EXPLORE_COOLDOWN_STORAGE_KEY) || {};
 }
 
 function isExploreCountOnCooldown(offer) {
@@ -173,13 +185,9 @@ function isExploreCountOnCooldown(offer) {
 }
 
 function markExploreCooldown(offer) {
-  try {
-    const cooldowns = loadExploreCooldowns();
-    cooldowns[offerKey(offer)] = Date.now();
-    localStorage.setItem(EXPLORE_COOLDOWN_STORAGE_KEY, JSON.stringify(cooldowns));
-  } catch (err) {
-    // localStorage unavailable (e.g. private browsing) — nothing to do
-  }
+  const cooldowns = loadExploreCooldowns();
+  cooldowns[offerKey(offer)] = Date.now();
+  writeJSON(EXPLORE_COOLDOWN_STORAGE_KEY, cooldowns);
 }
 
 // The actual protection: once this browser has registered an exploration
@@ -190,11 +198,7 @@ function markExploreCooldown(offer) {
 // prevention or unique-visitor verification. Swap these two functions for
 // a server-backed check later without touching anything else.
 function loadExploreSeen() {
-  try {
-    return JSON.parse(localStorage.getItem(EXPLORE_SEEN_STORAGE_KEY)) || {};
-  } catch (err) {
-    return {};
-  }
+  return readJSON(EXPLORE_SEEN_STORAGE_KEY) || {};
 }
 
 function hasExploredOffer(offer) {
@@ -202,13 +206,9 @@ function hasExploredOffer(offer) {
 }
 
 function markOfferExplored(offer) {
-  try {
-    const seen = loadExploreSeen();
-    seen[offerKey(offer)] = true;
-    localStorage.setItem(EXPLORE_SEEN_STORAGE_KEY, JSON.stringify(seen));
-  } catch (err) {
-    // localStorage unavailable (e.g. private browsing) — nothing to do
-  }
+  const seen = loadExploreSeen();
+  seen[offerKey(offer)] = true;
+  writeJSON(EXPLORE_SEEN_STORAGE_KEY, seen);
 }
 
 resetExploreDataIfOutdated();
@@ -258,44 +258,33 @@ function advanceBag() {
 }
 
 function saveShuffleState() {
-  try {
-    localStorage.setItem(
-      SHUFFLE_STORAGE_KEY,
-      JSON.stringify({ category: activeCategory, order: shuffleOrder, pos: shufflePos })
-    );
-  } catch (err) {
-    // localStorage unavailable (e.g. private browsing) — nothing to do
-  }
+  writeJSON(SHUFFLE_STORAGE_KEY, { category: activeCategory, order: shuffleOrder, pos: shufflePos });
 }
 
 function loadShuffleState() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(SHUFFLE_STORAGE_KEY));
+  const saved = readJSON(SHUFFLE_STORAGE_KEY);
 
-    if (
-      !saved ||
-      !OFFERS[saved.category] ||
-      !Array.isArray(saved.order) ||
-      saved.order.length !== OFFERS[saved.category].length
-    ) {
-      return null;
-    }
-
-    // An empty category has no valid index into an empty order — pos must
-    // be exactly 0 (meaning "no offer"), not caught by the pos < length
-    // check below since 0 >= 0 would otherwise wrongly reject it.
-    if (saved.order.length === 0) {
-      return saved.pos === 0 ? saved : null;
-    }
-
-    if (saved.pos < 0 || saved.pos >= saved.order.length) {
-      return null;
-    }
-
-    return saved;
-  } catch (err) {
+  if (
+    !saved ||
+    !OFFERS[saved.category] ||
+    !Array.isArray(saved.order) ||
+    saved.order.length !== OFFERS[saved.category].length
+  ) {
     return null;
   }
+
+  // An empty category has no valid index into an empty order — pos must
+  // be exactly 0 (meaning "no offer"), not caught by the pos < length
+  // check below since 0 >= 0 would otherwise wrongly reject it.
+  if (saved.order.length === 0) {
+    return saved.pos === 0 ? saved : null;
+  }
+
+  if (saved.pos < 0 || saved.pos >= saved.order.length) {
+    return null;
+  }
+
+  return saved;
 }
 
 const hashMatch = findOfferByHash();
@@ -332,9 +321,10 @@ if (hashMatch) {
   current = startBag(categoryOffers);
 }
 
-let history = [];
+let navHistory = [];
 let animating = false;
 let copyResetTimer = null;
+let shareResetTimer = null;
 let revealStage = "hidden";
 let revealTimer = null;
 
@@ -422,17 +412,17 @@ function renderCategoryFilter() {
   animateCategoryFilterToStart();
 }
 
-// The next Back click would restore history's top entry — if that entry
+// The next Back click would restore navHistory's top entry — if that entry
 // points at a category with no offers, there's nothing there to go back
 // to, so Back stays disabled rather than dropping you into an empty card.
 function nextBackTargetIsEmpty() {
-  if (history.length === 0) return false;
-  const target = history[history.length - 1];
+  if (navHistory.length === 0) return false;
+  const target = navHistory[navHistory.length - 1];
   return OFFERS[target.category].length === 0;
 }
 
 function updateBackButton() {
-  const disabled = history.length === 0 || nextBackTargetIsEmpty();
+  const disabled = navHistory.length === 0 || nextBackTargetIsEmpty();
   backBtn.disabled = disabled;
   backBtn.classList.toggle("is-disabled", disabled);
 }
@@ -529,16 +519,16 @@ function switchCategory(key) {
   if (key === activeCategory || animating || !OFFERS[key]) return;
 
   transition(() => {
-    history.push(snapshotState());
+    navHistory.push(snapshotState());
     applyState(key, startBag(OFFERS[key]));
   });
 }
 
 function goBack() {
-  if (history.length === 0 || animating || nextBackTargetIsEmpty()) return;
+  if (navHistory.length === 0 || animating || nextBackTargetIsEmpty()) return;
 
   transition(() => {
-    const target = history.pop();
+    const target = navHistory.pop();
     shuffleOrder = target.order;
     shufflePos = target.pos;
     applyState(target.category, target.index);
@@ -627,7 +617,7 @@ function nextOffer() {
   if (categoryOffers.length <= 1 || animating) return;
 
   transition(() => {
-    history.push(snapshotState());
+    navHistory.push(snapshotState());
     applyState(activeCategory, advanceBag());
   });
 }
@@ -681,8 +671,6 @@ async function copyOffer() {
     copyBtn.classList.remove("is-copied");
   }, COPY_RESET_TIMEOUT_MS);
 }
-
-let shareResetTimer = null;
 
 async function shareOffer() {
   const offer = categoryOffers[current];
@@ -746,19 +734,11 @@ function reserveOfferHeight() {
 }
 
 function saveHelpOpenState(isOpen) {
-  try {
-    localStorage.setItem(HELP_OPEN_STORAGE_KEY, isOpen ? "1" : "0");
-  } catch (err) {
-    // localStorage unavailable (e.g. private browsing) — nothing to do
-  }
+  writeStorage(HELP_OPEN_STORAGE_KEY, isOpen ? "1" : "0");
 }
 
 function loadHelpOpenState() {
-  try {
-    return localStorage.getItem(HELP_OPEN_STORAGE_KEY) === "1";
-  } catch (err) {
-    return false;
-  }
+  return readStorage(HELP_OPEN_STORAGE_KEY) === "1";
 }
 
 function openHelp() {

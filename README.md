@@ -1,15 +1,24 @@
 # QUE
 
-QUE is a tiny static widget for browsing offers — subscriptions, tools,
-services — one at a time, without a ranked list or a wall of competing
-logos. The problem it's solving: brand recognition changes how people read
-the same offer. A familiar logo can make an offer feel safer, an unfamiliar
-one can make it feel riskier, regardless of what's actually in the offer.
-QUE shows you "what you're getting" and "what it costs" first, and lets you
+QUE is an offer discovery system — a tiny static widget for seeing what
+you'd actually get and what it costs, one offer at a time, before you know
+whose it is. "Offer" isn't limited to deals or discounts: it can be a
+pricing plan, a product, a service, a subscription — anything with a clear
+"here's what you get, here's what it costs" shape. No ranked list, no wall
+of competing logos.
+
+The problem it's solving: brand recognition changes how people read the
+same offer. A familiar logo can make an offer feel safer, an unfamiliar one
+can make it feel riskier, regardless of what's actually in the offer. QUE
+shows you "what you're getting" and "what it costs" first, and lets you
 reveal the brand — deliberately, in two clicks — once you've actually read
-it. It doesn't rank, recommend, or take payment for placement; offers within
-a category are shown in a random, non-repeating order (see "How it works"
-below).
+it.
+
+QUE doesn't rank, recommend, or sell placement; offers within a category
+are shown in a random, non-repeating order (see "How it works" below).
+Anyone can submit an offer. Where QUE does make money, it's usage-based —
+providers are charged per redirect, not for visibility or a subscription
+(see "Commercial model" below).
 
 No build step, no framework, no dependencies. Just HTML, CSS, and vanilla JS
 — open `index.html` and it runs.
@@ -30,10 +39,13 @@ No build step, no framework, no dependencies. Just HTML, CSS, and vanilla JS
   clipboard.
 - **Share** — copies a deep link straight to the current offer (see
   "Deep links" below).
-- **Learn more** — opens the provider's real site in a new tab, and counts
-  once toward that offer's "N have explored" number (see "Local storage").
-- **Suggest an offer** — a link next to the QUE logo to a separate,
-  external submission form (QUE itself has no form or backend).
+- **Learn more** — opens the provider's real site in a new tab (the
+  redirect QUE's usage-based costs are tied to, see "Commercial model"),
+  and counts once toward that offer's "N have explored" number (see
+  "Local storage").
+- **Suggest an offer** — anyone can submit an offer via the link next to
+  the QUE logo, which opens a separate external submission form (QUE
+  itself has no form or backend).
 - **Transparency panel** — the `?` button opens a full explanation of how
   QUE works, covers commercial relationships, exploration tracking,
   accuracy caveats, and corrections.
@@ -67,6 +79,26 @@ fraud-proof or unique-visitor verification; see "Local storage" below.
 common case stays tight, and a genuinely longer-than-usual offer scrolls
 within its own section (with a fade + arrow hint) instead of forcing dead
 space on every shorter offer.
+
+## Commercial model
+
+QUE doesn't sell placement, ranking, or visibility — no offer can pay to
+appear more often, appear first, or skip the shuffle-bag described above.
+
+Where money does come in: the starting model charges providers per
+redirect — a click that sends a visitor to their site via "Learn more" —
+rather than a flat subscription or a fee tied to exposure. The current
+starting rate is **$10 per 1,000 redirects**. Cost scales with traffic
+actually delivered, not with how often an offer is shown or where it lands
+in the shuffle. Any future sponsorship, affiliate relationship, or other
+commercial arrangement gets disclosed in the `?` panel before it affects
+anything user-facing.
+
+This is the same signal exploration tracking already measures (see "Local
+storage" below): the "Learn more" click that increments an offer's
+`explored` count is the redirect a provider would be billed for. Today's
+count is a simplified, browser-local proxy for that — not the actual
+billing system.
 
 ## Deep links
 

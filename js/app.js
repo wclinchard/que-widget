@@ -380,6 +380,30 @@ function categoryPillHtml(key, active) {
   return `<li><button type="button" class="category-btn${activeClass}" data-category="${key}">${formatCategoryLabel(key)}</button></li>`;
 }
 
+// Animates the category row back to scrollLeft 0 by hand (plain rAF +
+// scrollLeft writes) instead of the native scrollTo({behavior: "smooth"}).
+// A native smooth scroll arms the browser's touch-scroll gesture
+// recognizer on the container, and on iOS Safari a tap landing while that
+// gesture is still "live" can get read as "stop scrolling" and swallow the
+// tap instead of hitting the pill underneath. Driving it with plain
+// scrollLeft writes never engages that native gesture state.
+function animateCategoryFilterToStart() {
+  const from = categoryFilterEl.scrollLeft;
+  if (from === 0) return;
+
+  const duration = 240;
+  const startTime = performance.now();
+
+  function step(now) {
+    const t = Math.min((now - startTime) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+    categoryFilterEl.scrollLeft = from * (1 - eased);
+    if (t < 1) requestAnimationFrame(step);
+  }
+
+  requestAnimationFrame(step);
+}
+
 // The active category always pins to the far left, split from the rest by
 // a divider — everything after it keeps its shuffled order from
 // availableCategories, it's just filtered down to "not the active one".
@@ -394,12 +418,8 @@ function renderCategoryFilter() {
   // The active pill is always freshly pinned at the far left — make sure
   // it's actually in view instead of leaving the row scrolled wherever it
   // happened to be (e.g. after picking a pill that was scrolled off to
-  // the right). Plain scrollLeft, not scrollTo(): Safari's Element.scrollTo
-  // has had reliability gaps, especially called right after an innerHTML
-  // swap, and any animated ("smooth") scroll left in-flight when the next
-  // tap lands can get read by mobile browsers as "stop scrolling" and
-  // swallow the tap instead of hitting the pill underneath.
-  categoryFilterEl.scrollLeft = 0;
+  // the right).
+  animateCategoryFilterToStart();
 }
 
 // The next Back click would restore history's top entry — if that entry

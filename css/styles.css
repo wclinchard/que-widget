@@ -60,6 +60,32 @@ main.is-visible {
   transform: translateY(0);
 }
 
+.keyboard-hint {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+  transition: opacity 0.9s ease;
+}
+
+.keyboard-hint.is-visible {
+  opacity: 0.6;
+}
+
+/* Arrow-key shortcuts aren't relevant without a physical keyboard. */
+@media (hover: none) and (pointer: coarse) {
+  .keyboard-hint {
+    display: none;
+  }
+}
+
 .offer-fade {
   transition: opacity 0.22s ease;
 }

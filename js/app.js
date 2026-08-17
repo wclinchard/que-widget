@@ -330,6 +330,7 @@ let revealStage = "hidden";
 let revealTimer = null;
 
 const mainEl = document.querySelector("main");
+const keyboardHintEl = document.getElementById("keyboardHint");
 const categoryFilterEl = document.getElementById("categoryFilter");
 const cardActionsEl = document.getElementById("cardActions");
 const emptyStateEl = document.getElementById("emptyState");
@@ -749,10 +750,18 @@ costsEl.addEventListener("scroll", () =>
 
 document.addEventListener("keydown", event => {
   if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+  if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+
+  // Without this, if focus happens to be on something inside the
+  // horizontally-scrollable category nav (e.g. after clicking a pill),
+  // the browser's own default arrow-key behavior scrolls that nav
+  // sideways *in addition to* Next/Back firing — two things moving at
+  // once from one keypress.
+  event.preventDefault();
 
   if (event.key === "ArrowRight") {
     nextOffer();
-  } else if (event.key === "ArrowLeft") {
+  } else {
     goBack();
   }
 });
@@ -803,5 +812,6 @@ window.addEventListener("resize", () => {
 requestAnimationFrame(() => {
   requestAnimationFrame(() => {
     mainEl.classList.add("is-visible");
+    keyboardHintEl.classList.add("is-visible");
   });
 });

@@ -519,10 +519,17 @@ function updateExploreCount(offer) {
 // when that list is actually tall enough to need scrolling — most offers
 // never trigger this, it's a safety net for whichever ones end up longer
 // than usual.
+// Shows the fade + arrow only while there's actually more to scroll to —
+// re-checked against real scroll position (not just "is this scrollable
+// at all"), otherwise the hint stayed on forever once a list became
+// scrollable, permanently blurring the last item even once you'd
+// scrolled all the way down to it.
 function updateScrollHint(listEl, fadeEl, arrowEl) {
   const isScrollable = listEl.scrollHeight > listEl.clientHeight + 1;
-  fadeEl.classList.toggle("is-visible", isScrollable);
-  arrowEl.classList.toggle("is-visible", isScrollable);
+  const atBottom = listEl.scrollTop + listEl.clientHeight >= listEl.scrollHeight - 1;
+  const showHint = isScrollable && !atBottom;
+  fadeEl.classList.toggle("is-visible", showHint);
+  arrowEl.classList.toggle("is-visible", showHint);
 }
 
 function render(index) {
@@ -732,6 +739,13 @@ copyBtn.addEventListener("click", copyOffer);
 shareBtn.addEventListener("click", shareOffer);
 helpBtn.addEventListener("click", toggleHelp);
 revealBtn.addEventListener("click", handleRevealClick);
+
+gettingEl.addEventListener("scroll", () =>
+  updateScrollHint(gettingEl, gettingFadeEl, gettingArrowEl)
+);
+costsEl.addEventListener("scroll", () =>
+  updateScrollHint(costsEl, costsFadeEl, costsArrowEl)
+);
 
 document.addEventListener("keydown", event => {
   if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;

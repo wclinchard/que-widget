@@ -90,7 +90,16 @@ function updateUrlHash(offer) {
     // window.history, not the bare `history` identifier — this file also
     // declares a top-level `history` (the back-navigation stack) that
     // shadows the global window.history for the rest of this script.
-    window.history.replaceState(null, "", location.pathname + location.search + hash);
+    // Some browsers (e.g. Safari) can throw here — rate limiting rapid
+    // calls, or restrictions in a private/locked-down context — and this
+    // runs inside transition()'s work(), so an uncaught throw here would
+    // otherwise be the difference between the app working and silently
+    // stopping after one tap.
+    try {
+      window.history.replaceState(null, "", location.pathname + location.search + hash);
+    } catch (err) {
+      // address bar just doesn't update this time — not worth breaking navigation over
+    }
   }
 }
 
@@ -478,15 +487,21 @@ function transition(work) {
   costsEl.classList.add("is-hidden");
 
   setTimeout(() => {
-    work();
-    updateBackButton();
-    updateNextButton();
-
-    requestAnimationFrame(() => {
-      gettingEl.classList.remove("is-hidden");
-      costsEl.classList.remove("is-hidden");
-      animating = false;
-    });
+    // If anything in work() throws, animating must still get released —
+    // otherwise every future tap (category switch, Next, Back) silently
+    // no-ops forever, since they all guard on `if (animating) return`.
+    // The first tap after load works; every one after it looks dead.
+    try {
+      work();
+      updateBackButton();
+      updateNextButton();
+    } finally {
+      requestAnimationFrame(() => {
+        gettingEl.classList.remove("is-hidden");
+        costsEl.classList.remove("is-hidden");
+        animating = false;
+      });
+    }
   }, TRANSITION_MS);
 }
 
